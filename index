@@ -1,0 +1,47 @@
+# Color a string
+# $1: String.
+# $2: Number of the color.
+#     0:black | 1:red     | 2:green | 3:yellow
+#     4:blue  | 5:magenta | 6:cyan  | 7:gray
+__c() { printf "%s" "$(tput setaf ${2:-7})${1}$(tput sgr0)"; }
+__ma() { printf "`__c "[ABORT]" 1` $@\n"; }
+# print_cmd() { printf "$(__c "`echo "$@" | awk '$1=$1'`" bold)\n"; }
+print_cmd() { 
+  # awk $1=$1 removes extra spaces
+  printf "\033[1;30m$ %s\n" "`echo "$@" | awk '$1=$1'`$(tput sgr0)"; 
+}
+__mi() { printf "`__c "[Info]" 4` $@\n"; }
+
+# Checks if a command is avaiable in your current session. Returns nothing if
+# the command is available. Otherwise it shows a message.
+# $1: Command.
+cmd_exists() {
+  if ! command -v $1 &> /dev/null; then 
+    __ma "`__c $1 6` command is unavailable.";
+    return 1;
+  fi 
+}
+
+# Prints and runs a command, setting its value into a variable
+# $@: Command.
+run_cmd() {
+  print_cmd $@;
+  unset __cmd_value;
+  # "eval" runs commands with pipes: https://stackoverflow.com/a/48098280/1054579
+  __cmd_value=$(eval $@);
+  [ -z "$__cmd_value" ] && { return 1; }
+  return 0;
+}
+
+# Commits your changes
+gitc() {
+  get_current_branch || return 1;
+  __mi "$__cmd_value: $1";
+}
+
+get_current_branch() {
+  cmd_exists git || return 1;
+  __mi "I'm getting the name of yout current branch...";
+  run_cmd "git branch | grep \* | cut -d ' ' -f2" || return 1;
+  __mi "And its name is `__c $__cmd_value 6`.";
+}
