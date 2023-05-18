@@ -17,7 +17,7 @@ __mi() { printf "`__c "[Info]" 4` $@\n"; }
 #     $1: Command.
 cmd_exists() {
   if ! command -v $1 &> /dev/null; then 
-    __me "Sorry, I didn't find `__c $1 6` command.";
+    __me "`__c $1 6` command doesn't exist.";
     return 1;
   fi 
 }
@@ -27,7 +27,7 @@ cmd_exists() {
 #     $@: Parameters
 has_parameters() {
   if [ $# -eq 0 ]; then
-    __me "Sorry, I need parameters to continue"; 
+    __me "Missing parameters."; 
     return 1;
   fi
   return 0;
@@ -69,13 +69,13 @@ gitc() {
   get_current_branch || return 1;
   local commit_cmd="git commit -m \"$__cmd_value: $1\"";
   [ -n "$2" ] && { commit_cmd="$commit_cmd -m \"$2\""; }
-  __mi "Commiting your changes";
+  __mi "Committing your changes.";
   run_cmd "$commit_cmd" || return 1;
 }
 
 # Gets the name of the current branch on the current directory.
 get_current_branch() {
   cmd_exists git || return 1;
-  __mi "Getting the name of your current branch";
+  __mi "Getting the name of your current branch.";
   set_cmd_value "git branch | grep \* | cut -d ' ' -f2" || return 1;
 }
