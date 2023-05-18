@@ -99,6 +99,25 @@ gitma() { run_cmd "git merge --abort"; }
 gitmc() { run_cmd "git merge --continue"; }
 gitmo() { run_cmd "git merge origin/$1"; }
 
+# Opens remote on the browser with the current branch. If $1 is specified,
+# $1 will be the displayed branch.
+#     $1 (optional): Branch name
+gito() {
+  is_current_directory_git && local branch=$1 || return 1;
+  [ -z "$1" ] && get_current_branch && branch=$__cmd_value;
+  run_cmd "open `get_repo_url`/tree/$branch";
+}
+
+# Opens a specific file on remote for the current branch. If $2 is specified,
+# $2 will be the selected branch.
+#     $1: Relative path of the file
+#     $2 (Optional): Branch name 
+gitof() {
+  is_current_directory_git && has_parameters $@ && local branch=$2 || return 1;
+  [ -z "$2" ] && get_current_branch && branch=$__cmd_value;
+  run_cmd "open `get_repo_url`/blob/$branch/$1";
+}
+
 # Pull commands
 gitpl() { run_cmd "git pull"; }
 gitplr() { run_cmd "git pull -r"; }
