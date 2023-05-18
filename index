@@ -39,9 +39,9 @@ print_cmd() {
   printf "\033[1;30m$ %s\n" "`echo "$@" | awk '$1=$1'`$(tput sgr0)"; 
 }
 
-# Prints and runs a command, setting its value into a variable
-# $@: Command.
-run_cmd() {
+# Prints and runs a command, setting its value to $__cmd_value.
+#     $@: Command.
+set_cmd_value() {
   print_cmd $@;
   unset __cmd_value;
   # "eval" runs commands with pipes: https://stackoverflow.com/a/48098280/1054579
@@ -50,6 +50,13 @@ run_cmd() {
   return 0;
 }
 
+# Prints and runs a command.
+#     $@: Command.
+run_cmd() {
+  print_cmd $@;
+  eval $@;
+  return $?;
+}
 
 
 
@@ -61,14 +68,14 @@ gitc() {
   has_parameters $@ || return 1;
   get_current_branch || return 1;
   local commit_cmd="git commit -m \"$__cmd_value: $1\"";
-  [ -n "$2" ] && { commit_cmd="$commit_cmd \"$2\""; }
+  [ -n "$2" ] && { commit_cmd="$commit_cmd -m \"$2\""; }
+  __mi "Commiting your changes";
   run_cmd "$commit_cmd" || return 1;
 }
 
 # Gets the name of the current branch on the current directory.
 get_current_branch() {
   cmd_exists git || return 1;
-  __mi "I'm getting the name of your current branch...";
-  run_cmd "git branch | grep \* | cut -d ' ' -f2" || return 1;
-  __mi "And its name is `__c $__cmd_value 6`.";
+  __mi "Getting the name of your current branch";
+  set_cmd_value "git branch | grep \* | cut -d ' ' -f2" || return 1;
 }
