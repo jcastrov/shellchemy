@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 git_restore='git restore';
 git_restore_f='git restore .';
 git_switch='git switch';
