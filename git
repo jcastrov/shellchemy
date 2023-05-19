@@ -105,7 +105,7 @@ gitmo() { run_cmd "git merge origin/$1"; }
 # $1 will be the displayed branch.
 #     $1 (optional): Branch name
 gito() {
-  is_current_directory_git && local branch=$1 || return 1;
+  is_git_directory && local branch=$1 || return 1;
   [ -z "$1" ] && get_current_branch && branch=$__cmd_value;
   run_cmd "open `get_repo_url`/tree/$branch";
 }
@@ -115,7 +115,7 @@ gito() {
 #     $1: Relative path of the file
 #     $2 (Optional): Branch name 
 gitof() {
-  is_current_directory_git && has_parameters $@ && local branch=$2 || return 1;
+  is_git_directory && has_parameters $@ && local branch=$2 || return 1;
   [ -z "$2" ] && get_current_branch && branch=$__cmd_value;
   run_cmd "open `get_repo_url`/blob/$branch/$1";
 }
@@ -129,7 +129,7 @@ gitplr() { run_cmd "git pull -r"; }
 #     $1: Destination branch
 #     $2 (Optional): Source branch
 gitprc() { 
-  is_current_directory_git && has_parameters $@ || return 1;
+  is_git_directory && has_parameters $@ || return 1;
   local source_branch=$2;
   [ -z "$2" ] && { get_current_branch || return 1 && source_branch=$__cmd_value; }
   run_cmd "open `get_repo_url`/compare/$1...$source_branch"
@@ -139,7 +139,7 @@ gitprc() {
 # current branch. If #1 is specified, $1 will be the search text.
 #     $1 (Optional): Search text
 gitprf() {
-  is_current_directory_git || return 1;
+  is_git_directory || return 1;
   local search_text=$1;
   [ -z "$1" ] && { get_current_branch || return 1; search_text="head:$__cmd_value"; }
   run_cmd "open `get_repo_url`/pulls?q=$search_text"
@@ -151,7 +151,7 @@ gitps() { run_cmd "git push"; }
 # Deletes a branch on remote.
 #     $1: Branch name
 gitpsd() {
-  is_current_directory_git && has_parameters $@ || return 1;
+  is_git_directory && has_parameters $@ || return 1;
   branch_on_remote_exists $1 && {
     question "Are you sure to delete `__c $1 1` `__c "on remote" 3`?";
     [ $? == 0 ] && { run_cmd "git push origin --delete $1"; }
@@ -238,7 +238,9 @@ gitsw() {
   [ $? == 0 ] && __mo "`__c $1 2` has been created from `__c $start_point 6`.";
 }
 
-# Checks if current directory is inside a Git repostory.
-is_current_directory_git() {
-  [[ $(eval "git rev-parse --is-inside-work-tree") == "true" ]] && return 0 || return 1;
+# Checks if the current directory or a specific one is inside a Git repostory.
+#     $1 (optional): Directory path to validate
+is_git_directory() {
+  (cd ${1:-.}; [[ $(eval "git rev-parse --is-inside-work-tree") == "true" ]] && return 0 || return 1);
+  return $?;
 }
