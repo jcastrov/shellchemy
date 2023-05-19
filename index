@@ -37,6 +37,19 @@ cmd_exists() {
   fi 
 }
 
+# Enables Brew on the current terminal session.
+ebrew() {
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+}
+
+# Enables NVM on the current terminal session.
+envm() {
+  run_brew;
+  export NVM_DIR=~/.nvm
+  source $(brew --prefix nvm)/nvm.sh
+}
+
+
 # Checks if a function has parameters. Returns 0 if there are paramters. 
 # Otherwise returns 1.
 #     $@: Parameters
