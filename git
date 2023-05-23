@@ -234,8 +234,7 @@ gitsw() {
   [ -z "$2" ] && { get_current_branch && start_point="$__cmd_value" || return 1; }
   question "Do you want to create `__c $1 2` branch from `__c $start_point 6`?";
   [ $? != 0 ] && return 0;
-  run_cmd "$git_switch_c $@"
-  [ $? == 0 ] && __mo "`__c $1 2` has been created from `__c $start_point 6`.";
+  run_cmd "$git_switch_c $@";
 }
 
 # Checks if the current directory or a specific one is inside a Git repostory.
