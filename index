@@ -44,7 +44,7 @@ ebrew() {
 
 # Enables NVM on the current terminal session.
 envm() {
-  run_brew;
+  ebrew;
   export NVM_DIR=~/.nvm
   source $(brew --prefix nvm)/nvm.sh
 }
