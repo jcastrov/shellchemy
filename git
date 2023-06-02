@@ -56,7 +56,8 @@ get_current_branch() {
 # https://github.com/microsoft/vscode, the root directory name must be "vscode"
 # and its parent "microsoft".
 get_repo_url() {
-  echo "https://github.com/$(basename $(dirname "$PWD"))/$(basename "$PWD")";
+  local repo_path=$(eval "git rev-parse --show-toplevel");
+  echo "https://github.com/$(basename $(dirname "$repo_path"))/$(basename "$repo_path")";
 }
 
 # Adds files and shows a quick status
