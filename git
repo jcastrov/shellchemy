@@ -76,6 +76,12 @@ gitbD() {
   run_cmd "git branch -D $1";
 }
 
+# Gets the list of branches created in remote
+#    $@: Additional parameters
+gitbl() {
+  run_cmd "git for-each-ref --sort=authorname --format='%(committerdate) %09 %(authorname) %09 %(refname)' refs/remotes $@"
+}
+
 # Commits your changes
 #    $1: Summary.
 #    $2 (optional): Description.
