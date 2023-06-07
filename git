@@ -82,6 +82,10 @@ gitbl() {
   run_cmd "git for-each-ref --sort=authorname --format='%(committerdate) %09 %(authorname) %09 %(refname)' refs/remotes $@"
 }
 
+# Renames a branch
+#    $@: Branch name and additional parameters
+gitbm() { run_cmd "git branch -m $@"; }
+
 # Commits your changes
 #    $1: Summary.
 #    $2 (optional): Description.
