@@ -112,12 +112,14 @@ gitma() { run_cmd "git merge --abort"; }
 gitmc() { run_cmd "git merge --continue"; }
 gitmo() { run_cmd "git merge origin/$1"; }
 
-# Opens remote on the browser with the current branch. If $1 is specified,
-# $1 will be the displayed branch.
+# Opens remote on the browser with the current branch or a specific one ($1),
+# optionally opening a specific file ($2).
 #     $1 (optional): Branch name
+#     $2 (optional): Relative path of the file
 gito() {
   is_git_directory && local branch=$1 || return 1;
   [ -z "$1" ] && get_current_branch && branch=$__cmd_value;
+  [ -n "$2" ] && { gitof $2 $1; return 0; }
   run_cmd "open `get_repo_url`/tree/$branch";
 }
 
