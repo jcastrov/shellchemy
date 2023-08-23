@@ -46,7 +46,12 @@ branch_on_remote_exists() {
 # Gets the name of the current branch on the current directory.
 get_current_branch() {
   cmd_exists git || return 1;
-  set_cmd_value "git branch | grep \* | cut -d ' ' -f2" || return 1;
+  # Another way to get the branch: git branch | grep \* | cut -d ' ' -f2
+  set_cmd_value "git branch --show-current" || {
+    set_cmd_value "git rev-parse --short HEAD" || return 1;
+    __mi "Current SHA: `__c $__cmd_value 6`";
+    return 0;
+  };
   __mi "Current branch: `__c $__cmd_value 6`";
   return 0;
 }
@@ -97,6 +102,8 @@ gitc() {
   __mi "Committing your changes.";
   run_cmd "$commit_cmd" || return 1;
 }
+
+gitchk() { run_cmd "git checkout $@"; }
 
 # Cherry pick commands
 gitchp() { run_cmd "git cherry-pick $1"; }
