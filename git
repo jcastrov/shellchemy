@@ -238,8 +238,8 @@ gitshp() { run_cmd "git stash pop"; }
 gitshps() { run_cmd "git stash save \"$1\""; }
 gitshu() { run_cmd "git stash --include-untracked \"$1\""; }
 
-# Switches or creates a branch from the current branch. If $2 is specified and
-# the branch doesn't exist, $1 will be created from $2 instead. 
+# Switches or creates a branch from the current branch. Branch $1 will be
+# created from $2 instead, if $2 is specified and $1 doesn't exist.
 #     $1: Branch to switch or create
 #     $2 (Optional): Branch or SHA starting point
 gitsw() {
