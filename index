@@ -37,16 +37,34 @@ cmd_exists() {
   fi 
 }
 
+__is_cmd_enabled() {
+  cmd_exists $1 > /dev/null 2>&1 && __mw "`__c $1 6` command had already been enabled.";
+}
 # Enables Brew on the current terminal session.
 ebrew() {
-  eval "$(/opt/homebrew/bin/brew shellenv)"
+  __is_cmd_enabled brew && return 1;
+  run_cmd "$(/opt/homebrew/bin/brew shellenv)";
+  run_cmd "brew --version";
 }
 
 # Enables NVM on the current terminal session.
 envm() {
+  __is_cmd_enabled nvm && return 1;
   ebrew;
-  export NVM_DIR=~/.nvm
-  source $(brew --prefix nvm)/nvm.sh
+  run_cmd "export NVM_DIR=~/.nvm";
+  run_cmd "source $(brew --prefix nvm)/nvm.sh";
+  run_cmd "node --version";
+}
+
+epython() {
+  __is_cmd_enabled python && return 1;
+  ebrew;
+  export PYENV_ROOT="$HOME/.pyenv"
+  command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init -)"
+  pyenv global 2;
+  run_cmd "which python";
+  run_cmd "python --version";
 }
 
 
