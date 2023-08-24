@@ -5,8 +5,14 @@ source "$(dirname "${BASH_SOURCE[0]}")/git"
 # Color a string
 #     $1: String.
 #     $2: Number of the color.
-#         0:black | 1:red     | 2:green | 3:yellow
-#         4:blue  | 5:magenta | 6:cyan  | 7:gray
+#         0:black
+#         1:red
+#         2:green
+#         3:yellow
+#         4:blue
+#         5:magenta
+#         6:cyan
+#         7:gray
 __c() { printf "%s" "$(tput setaf ${2:-7})${1}$(tput sgr0)"; }
 
 # Prints a message with an Error label at the start, and a new line at the end.
