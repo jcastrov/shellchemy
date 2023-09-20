@@ -285,16 +285,26 @@ gitsw() {
 
   local color=1;
   [[ $2 =~ ^origin/ ]] && {
-    ! branch_on_remote_exists $(basename $2) && return 1;
+    ! branch_on_remote_exists ${2#"origin/"} && return 1;
     color=6;
   }
 
   question "Do you want to create `__c $1 2` branch from $(__c $start_point $color)?";
   [ $? == 0 ] && {
     $on_remote && gitpsd $1;
+    gitf;
     run_cmd "$git_switch_c $@";
   }
   return 0;
+}
+
+gitsync() {
+  ! branch_on_remote_exists $1 && return 1;
+  gitf;
+  local current_branch=$(echo_current_branch);
+  local new_branch=${current_branch}-$1;
+  run_cmd "$git_switch_c $new_branch origin/$1";
+  gitmo $current_branch;
 }
 
 # Checks if the current directory or a specific one is inside a Git repostory.
