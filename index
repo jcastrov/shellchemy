@@ -85,6 +85,19 @@ has_parameters() {
   return 0;
 }
 
+jira() {
+  local branch=$1;
+  [ -z "$1" ] && { 
+    ! is_git_directory && return 1;
+    branch=$(echo_current_branch);
+  }
+  [[ $branch =~ (^[A-Za-z]*-[0-9]*) ]] || {
+    __me "Branch `__c $branch 3` is not a valid ticket name.";
+    return 1;
+  }
+  run_cmd "open https://$jira_organization.atlassian.net/browse/${BASH_REMATCH[1]}";
+}
+
 # Prints a string with a light black foreground.
 print_cmd() { 
   # awk $1=$1 removes extra spaces
