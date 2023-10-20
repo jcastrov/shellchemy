@@ -283,18 +283,25 @@ gitsw() {
     }
   }
 
-  local color=1;
-  [[ $2 =~ ^origin/ ]] && {
+  [[ $start_point =~ ^origin/ ]] && {
     ! branch_on_remote_exists ${2#"origin/"} && return 1;
-    color=6;
+  } || {
+    question "Do you want to create `__c $1 2` branch from local $(__c $start_point $C_RED)?";
+    [ $? == 0 ] && {
+      $on_remote && gitpsd $1;
+      run_cmd "$git_switch_c $@";
+      return 0;
+    }
+    start_point="origin/$start_point";
   }
 
-  question "Do you want to create `__c $1 2` branch from $(__c $start_point $color)?";
+  question "Do you want to create `__c $1 2` branch from remote $(__c $start_point $C_CYAN)?";
   [ $? == 0 ] && {
     $on_remote && gitpsd $1;
     gitf;
     run_cmd "$git_switch_c $@";
   }
+  
   return 0;
 }
 

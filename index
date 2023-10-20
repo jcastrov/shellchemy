@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
 
+C_BlACK=0;
+C_RED=1;
+C_GREEN=2;
+C_YELLOW=3;
+C_BLUE=4;
+C_MAGENTA=5;
+C_CYAN=6;
+C_GRAY=7;
+
 source "$(dirname "${BASH_SOURCE[0]}")/git"
 
-# Color a string
+# Colors a string
 #     $1: String.
 #     $2: Number of the color.
-#         0:black
-#         1:red
-#         2:green
-#         3:yellow
-#         4:blue
-#         5:magenta
-#         6:cyan
-#         7:gray
 __c() { printf "%s" "$(tput setaf ${2:-7})${1}$(tput sgr0)"; }
 
 # Prints a message with an Error label at the start, and a new line at the end.
