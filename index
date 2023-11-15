@@ -45,7 +45,7 @@ cmd_exists() {
 }
 
 __is_cmd_enabled() {
-  cmd_exists $1 > /dev/null 2>&1 && __mw "`__c $1 6` command had already been enabled.";
+  cmd_exists $1 > /dev/null 2>&1 && __mw "`__c $1 6` command is already enabled.";
 }
 # Enables Brew on the current terminal session.
 ebrew() {
