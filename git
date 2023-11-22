@@ -283,17 +283,17 @@ gitsw() {
     }
   }
 
-  [[ $start_point =~ ^origin/ ]] && {
+  if [[ $start_point =~ ^origin/ ]]; then
     ! branch_on_remote_exists ${2#"origin/"} && return 1;
-  } || {
+  else
     question "Do you want to create `__c $1 2` branch from local $(__c $start_point $C_RED)?";
     [ $? == 0 ] && {
       $on_remote && gitpsd $1;
       run_cmd "$git_switch_c $@";
       return 0;
-    }
+    };
     start_point="origin/$start_point";
-  }
+  fi
 
   question "Do you want to create `__c $1 2` branch from remote $(__c $start_point $C_CYAN)?";
   [ $? == 0 ] && {
