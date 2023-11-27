@@ -230,6 +230,7 @@ gitrbq() { gitrb --quit; }
 gitrbs() { gitrb --skip; }
 
 # Reset commands
+gitrm() { run_cmd "git reset --merge"; }
 gitrs() { run_cmd "git reset $@"; }
 gitrsh() { run_cmd "git reset --hard $1"; }
 gitrsho() { run_cmd "git reset --hard origin/$1"; }
