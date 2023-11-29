@@ -305,6 +305,7 @@ gitsw() {
   
   return 0;
 }
+gitswC() { run_cmd "git switch -C $@"; }
 
 gitsync() {
   ! branch_on_remote_exists $1 && return 1;
