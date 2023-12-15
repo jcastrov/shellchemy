@@ -313,7 +313,11 @@ gitsync() {
   local current_branch=$(echo_current_branch);
   local new_branch=${current_branch}-$1;
   run_cmd "$git_switch_c $new_branch origin/$1";
-  gitmo $current_branch;
+  if [[ $current_branch == "main" ]]; then
+    question "Do you want to use \"ours\" merge strategy?";
+    [ $? == 0 ] && { gitmo $current_branch "-s ours --no-edit"; return 0; }
+  fi
+  gitmo $current_branch "--no-edit";
 }
 
 # Checks if the current directory or a specific one is inside a Git repostory.
