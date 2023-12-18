@@ -124,7 +124,7 @@ gitchpc() { run_cmd "git cherry-pick --continue"; }
 # Fetches branches
 gitf() { 
   __mi "Downloading objects and refs from origin..."
-  run_cmd "git fetch -p"; 
+  run_cmd "git fetch -p";
 }
 
 # Merge commands
@@ -263,8 +263,8 @@ gitshu() { run_cmd "git stash --include-untracked \"$1\""; }
 gitsw() {
   has_parameters $@ || return 1;
   [ "$1" == "-" ] && {
-    run_cmd "$git_switch -"; 
-    return 0; 
+    run_cmd "$git_switch -";
+    return 0;
   }
 
   local start_point=$2;
@@ -279,8 +279,8 @@ gitsw() {
     question "Do you want to switch to `__c $1 3` remote branch?";
     [ $? == 0 ] && {
       gitf;
-      run_cmd "$git_switch $1"; 
-      return 0; 
+      run_cmd "$git_switch $1";
+      return 0;
     }
   }
 
