@@ -107,7 +107,7 @@ gitprf() {
 
 # Pushes a branch
 gitps() { 
-  run_cmd "git push";
+  run_cmd "git push $@";
   local current_branch=$(echo_current_branch);
   local target_branch=$current_branch;
   if [[ $current_branch =~ -(develop|qa)$ ]]; then
@@ -131,13 +131,10 @@ gitpsd() {
 }
 
 # Pushes a branch forcefully
-gitpsf() { __run "git push --force-with-lease"; }
+gitpsf() { gitps "--force-with-lease"; }
 
 # Pushes a branch forcefully fixing the upstream
-gitpsfu() {
-  local current_branch=$(echo_current_branch);
-  run_cmd "git push --force-with-lease --set-upstream origin $current_branch";
-}
+gitpsfu() { gitpsu "--force-with-lease"; }
 
 # Renames the current branch locally and on remote.
 #     $1: New branch name
@@ -152,7 +149,7 @@ gitpsm() {
 }
 
 # Pushes a branch for the first time
-gitpsu() { get_current_branch && run_cmd "git push --set-upstream origin $__cmd_value"; }
+gitpsu() { gitps "--set-upstream origin $(echo_current_branch) $@"; }
 
 # Rebase commands
 gitrb() { run_cmd "git rebase $@"; }
