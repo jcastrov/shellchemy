@@ -290,7 +290,7 @@ gitsw() {
     question "Do you want to create `__c $1 2` branch from local $(__c $start_point $C_RED)?";
     [ $? == 0 ] && {
       $on_remote && gitpsd $1;
-      run_cmd "$git_switch_c $@";
+      run_cmd "$git_switch_c $1 $start_point";
       return 0;
     };
     start_point="origin/$start_point";
@@ -300,7 +300,7 @@ gitsw() {
   [ $? == 0 ] && {
     $on_remote && gitpsd $1;
     gitf;
-    run_cmd "$git_switch_c $@";
+    run_cmd "$git_switch_c $1 $start_point";
   }
   
   return 0;
