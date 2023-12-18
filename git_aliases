@@ -1,80 +1,6 @@
 #!/usr/bin/env bash
 
-git_restore='git restore';
-git_restore_f='git restore .';
-git_switch='git switch';
-git_switch_c='git switch -C';
-
-# - Get the git version
-#       $(eval "git --version") ➡️  git version 2.25.0
-# - Extract the first pair of numbers with a regular expression
-#       =~ ([0-9]{1}.[0-9]{2}) ➡️  2.25
-[[ $(eval "git --version") =~ ([0-9]{1}.[0-9]{2}) ]];
-
-# - Remove the decimal separator   | tr -d . ➡️  225
-# - Check if the extracted number is lower than 223
-if [[ $(eval 'echo "${BASH_REMATCH[1]}" | tr -d .') -lt 223 ]]; then
-  git_restore='git checkout';
-  git_restore_f='git checkout -f';
-  git_switch='git checkout';
-  git_switch_c='git checkout -B';
-fi
-
-# Checks if a branch exists.
-#     $1: Branch name
-__branch_exists() {
-  set_cmd_value "$1";
-  [ -z "$__cmd_value" ] && { __mw "Branch `__c $3 6` doesn't exist `__c "$2" 5`."; return 1; }
-  __mo "Branch `__c $3 6` exists $2";
-  return 0;
-}
-
-# Checks if a branch on remote exists.
-#     $1: Branch name
-branch_locally_exists() {
-  has_parameters $@ || return 1;
-  __branch_exists "git show-ref refs/heads/$1" "locally" $1 || return 1;
-}
-
-# Checks if a branch locally exists.
-#     $1: Branch name
-branch_on_remote_exists() {
-  has_parameters $@ || return 1;
-  __branch_exists "git ls-remote --heads origin refs/heads/$1 | grep $1" "on remote" $1 || return 1;
-}
-
-# Gets the name of the current branch on the current directory.
-get_current_branch() {
-  cmd_exists git || return 1;
-  
-  # If branch doesn't exist, set SHA instead
-  set_cmd_value "git branch --show-current" || {
-    set_cmd_value "git rev-parse --short HEAD" || return 1;
-    __mi "Current SHA: `__c $__cmd_value 6`";
-    return 0;
-  };
-  __mi "Current branch: `__c $__cmd_value 6`";
-  return 0;
-}
-
-# Gets the name of the current branch on the current directory.
-# If the HEAD is detached, then gets the SHA. 
-echo_current_branch() {
-  cmd_exists git || return 1;
-  local result=$(git branch --show-current);
-  [ -z "$result" ] && result=$(git rev-parse --short HEAD);
-  echo $result;
-  return 0;
-}
-
-# Gets the URL of the repository. Make sure your directory and parent directory
-# have the name of the URL of the repo. For instance, if your repo is
-# https://github.com/microsoft/vscode, the root directory name must be "vscode"
-# and its parent "microsoft".
-get_repo_url() {
-  local repo_path=$(eval "git rev-parse --show-toplevel");
-  echo "https://github.com/$(basename $(dirname "$repo_path"))/$(basename "$repo_path")";
-}
+source "$(dirname "${BASH_SOURCE[0]}")/git_utils"
 
 # Adds files and shows a quick status
 gita() {
@@ -180,7 +106,16 @@ gitprf() {
 }
 
 # Pushes a branch
-gitps() { run_cmd "git push"; }
+gitps() { 
+  run_cmd "git push";
+  local current_branch=$(echo_current_branch);
+  local target_branch=$current_branch;
+  if [[ $current_branch =~ -(develop|qa)$ ]]; then
+    target_branch="${current_branch%-*}";
+    question "Do you want to switch back to branch $(__c $target_branch $C_CYAN)?";
+    [ $? == 0 ] && { run_cmd "$git_switch $1"; }
+  fi
+}
 
 # Deletes a branch on remote.
 #     $1: Branch name
@@ -200,7 +135,8 @@ gitpsf() { __run "git push --force-with-lease"; }
 
 # Pushes a branch forcefully fixing the upstream
 gitpsfu() {
-  get_current_branch && run_cmd "git push --force-with-lease --set-upstream origin $__cmd_value";
+  local current_branch=$(echo_current_branch);
+  run_cmd "git push --force-with-lease --set-upstream origin $current_branch";
 }
 
 # Renames the current branch locally and on remote.

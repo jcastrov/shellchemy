@@ -9,7 +9,7 @@ C_MAGENTA=5;
 C_CYAN=6;
 C_GRAY=7;
 
-source "$(dirname "${BASH_SOURCE[0]}")/git"
+source "$(dirname "${BASH_SOURCE[0]}")/git_aliases"
 
 # Colors a string
 #     $1: String.
