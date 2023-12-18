@@ -44,6 +44,16 @@ branch_on_remote_exists() {
 }
 
 # Gets the name of the current branch on the current directory.
+# If the HEAD is detached, then gets the SHA. 
+echo_current_branch() {
+  cmd_exists git || return 1;
+  local result=$(git branch --show-current);
+  [ -z "$result" ] && result=$(git rev-parse --short HEAD);
+  echo $result;
+  return 0;
+}
+
+# Gets the name of the current branch on the current directory.
 get_current_branch() {
   cmd_exists git || return 1;
   
@@ -54,16 +64,6 @@ get_current_branch() {
     return 0;
   };
   __mi "Current branch: `__c $__cmd_value 6`";
-  return 0;
-}
-
-# Gets the name of the current branch on the current directory.
-# If the HEAD is detached, then gets the SHA. 
-echo_current_branch() {
-  cmd_exists git || return 1;
-  local result=$(git branch --show-current);
-  [ -z "$result" ] && result=$(git rev-parse --short HEAD);
-  echo $result;
   return 0;
 }
 
