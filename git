@@ -37,6 +37,7 @@ gitc() {
   __mi "Committing your changes.";
   run_cmd "git commit -m \"$current_branch: $1\" $2";
 }
+gitca() { gitc "$1" "--amend"; }
 
 gitchk() { run_cmd "git checkout $@"; }
 
