@@ -33,11 +33,9 @@ gitbm() { run_cmd "git branch -m $@"; }
 #    $2 (optional): Description.
 gitc() {
   has_parameters $@ || return 1;
-  get_current_branch || return 1;
-  local commit_cmd="git commit -m \"$__cmd_value: $1\"";
-  [ -n "$2" ] && { commit_cmd="$commit_cmd -m \"$2\""; }
+  local current_branch=$(echo_current_branch);
   __mi "Committing your changes.";
-  run_cmd "$commit_cmd" || return 1;
+  run_cmd "git commit -m \"$current_branch: $1\" $2";
 }
 
 gitchk() { run_cmd "git checkout $@"; }
