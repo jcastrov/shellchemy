@@ -89,9 +89,14 @@ gitplr() { run_cmd "git pull -r"; }
 #     $2 (Optional): Source branch
 gitprc() { 
   is_git_directory && has_parameters $@ || return 1;
-  local source_branch=$2;
-  [ -z "$2" ] && { get_current_branch || return 1 && source_branch=$__cmd_value; }
-  run_cmd "open `get_repo_url`/compare/$1...$source_branch"
+
+  local source_branch=$1;
+  local destination_branch=$2;
+  [ $# == 1 ] && {
+    source_branch=$(echo_current_branch);
+    destination_branch=$1;
+  }
+  run_cmd "open `get_repo_url`/compare/$destination_branch...$source_branch"
 }
 
 # Searches for pull requests on the repo URL, where the source branch is the
