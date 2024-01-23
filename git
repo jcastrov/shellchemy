@@ -56,7 +56,7 @@ gitf() {
 gitm() { run_cmd "git merge $1"; }
 gitma() { run_cmd "git merge --abort"; }
 gitmc() { run_cmd "git merge --continue"; }
-gitmo() { run_cmd "git merge $2 origin/$1"; }
+gitmo() { run_cmd "git merge $2 origin/$1 --no-edit"; }
 
 # Opens remote on the browser with the current branch or a specific one ($1),
 # optionally opening a specific file ($2).
