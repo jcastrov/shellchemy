@@ -253,16 +253,32 @@ gitsw() {
 gitswC() { run_cmd "git switch -C $@"; }
 
 gitsync() {
+  local current_branch=$(echo_current_branch);
+
+  # Sync should not be done from qa or develop branches.
+  if [[ $current_branch == "qa" || $current_branch == "develop" || $current_branch == "dev" ]]; then
+    __me "Current branch cannot be `__c $current_branch $C_CYAN`"; return 1;
+  fi
+
+  # If branch on remote doesn't exist, stop execution. Otherwise fetch remote branches.
   ! branch_on_remote_exists $1 && return 1;
   gitf;
-  local current_branch=$(echo_current_branch);
+
+  # Check if the new branch exists or if it should be recreated.
   local new_branch=${current_branch}-$1;
-  run_cmd "$git_switch_c $new_branch origin/$1";
+  local switch_cmd="$git_switch_c $new_branch origin/$1";
+  if branch_on_remote_exists $new_branch && branch_locally_exists $new_branch; then
+    question "Do you want to update the current `__c $new_branch $C_CYAN` branch?";
+    [ $? == 0 ] && { switch_cmd="$git_switch $new_branch"; }
+  fi
+  run_cmd $switch_cmd;
+
+  # Only use "ours" strategy with the main branch of the repo.
   if [[ $current_branch == "main" || $current_branch == "master" ]]; then
     question "Do you want to use \"ours\" merge strategy?";
-    [ $? == 0 ] && { gitmo $current_branch "-s ours --no-edit"; return 0; }
+    [ $? == 0 ] && { gitmo $current_branch "-s ours"; return 0; }
   fi
-  gitmo $current_branch "--no-edit";
+  gitmo $current_branch;
 }
 
 # Checks if the current directory or a specific one is inside a Git repostory.
