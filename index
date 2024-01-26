@@ -23,7 +23,7 @@ print_error() { printf "`__c "[Error]" 1` $@\n"; }
 print_info() { printf "`__c "[Info]" 4` $@\n"; }
 
 # Prints a message with an Ok label at the start, and a new line at the end.
-__mo() { printf "`__c "[Ok]" 2` $@\n"; }
+print_ok() { printf "`__c "[Ok]" 2` $@\n"; }
 
 # Prints a message with a Warning label at the start, and a new line at the end.
 __mw() { printf "`__c "[Warning]" 3` $@\n"; }
