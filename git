@@ -268,7 +268,7 @@ gitsync() {
 
   # Sync should not be done from qa or develop branches.
   if [[ $current_branch == "qa" || $current_branch == "develop" || $current_branch == "dev" ]]; then
-    __me "Current branch cannot be `__c $current_branch $C_CYAN`"; return 1;
+    print_error "Current branch cannot be `__c $current_branch $C_CYAN`"; return 1;
   fi
 
   # If branch on remote doesn't exist, stop execution. Otherwise fetch remote branches.

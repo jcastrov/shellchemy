@@ -17,7 +17,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/git"
 __c() { printf "%s" "$(tput setaf ${2:-7})${1}$(tput sgr0)"; }
 
 # Prints a message with an Error label at the start, and a new line at the end.
-__me() { printf "`__c "[Error]" 1` $@\n"; }
+print_error() { printf "`__c "[Error]" 1` $@\n"; }
 
 # Prints a message with an Info label at the start, and a new line at the end.
 __mi() { printf "`__c "[Info]" 4` $@\n"; }
@@ -39,7 +39,7 @@ br() {
 #     $1: Command.
 cmd_exists() {
   if ! command -v $1 &> /dev/null; then 
-    __me "`__c $1 6` command doesn't exist.";
+    print_error "`__c $1 6` command doesn't exist.";
     return 1;
   fi 
 }
@@ -80,7 +80,7 @@ epython() {
 #     $@: Parameters
 has_parameters() {
   if [ $# -eq 0 ]; then
-    __me "Missing parameters."; 
+    print_error "Missing parameters."; 
     return 1;
   fi
   return 0;
@@ -93,7 +93,7 @@ jira() {
     branch=$(echo_current_branch);
   }
   [[ $branch =~ (^[A-Za-z]*-[0-9]*) ]] || {
-    __me "Branch `__c $branch 3` is not a valid ticket name.";
+    print_error "Branch `__c $branch 3` is not a valid ticket name.";
     return 1;
   }
   run_cmd "open https://$jira_organization.atlassian.net/browse/${BASH_REMATCH[1]}";
