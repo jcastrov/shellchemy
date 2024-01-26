@@ -26,7 +26,7 @@ print_info() { printf "`__c "[Info]" 4` $@\n"; }
 print_ok() { printf "`__c "[Ok]" 2` $@\n"; }
 
 # Prints a message with a Warning label at the start, and a new line at the end.
-__mw() { printf "`__c "[Warning]" 3` $@\n"; }
+print_warning() { printf "`__c "[Warning]" 3` $@\n"; }
 
 br() {
   print_info "Applying new changes";
@@ -45,7 +45,7 @@ cmd_exists() {
 }
 
 __is_cmd_enabled() {
-  cmd_exists $1 > /dev/null 2>&1 && __mw "`__c $1 6` command is already enabled.";
+  cmd_exists $1 > /dev/null 2>&1 && print_warning "`__c $1 6` command is already enabled.";
 }
 # Enables Brew on the current terminal session.
 ebrew() {

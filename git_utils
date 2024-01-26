@@ -24,7 +24,7 @@ fi
 #     $1: Branch name
 __branch_exists() {
   set_cmd_value "$1";
-  [ -z "$__cmd_value" ] && { __mw "Branch `__c $3 6` doesn't exist `__c "$2" 5`."; return 1; }
+  [ -z "$__cmd_value" ] && { print_warning "Branch `__c $3 6` doesn't exist `__c "$2" 5`."; return 1; }
   print_ok "Branch `__c $3 6` exists $2";
   return 0;
 }
