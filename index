@@ -11,22 +11,22 @@ C_GRAY=7;
 
 source "$(dirname "${BASH_SOURCE[0]}")/git"
 
-# Colors a string
-#     $1: String.
-#     $2: Number of the color.
+# Colors a string ($1) with a number ($2)
 __c() { printf "%s" "$(tput setaf ${2:-7})${1}$(tput sgr0)"; }
 
-# Prints a message with an Error label at the start, and a new line at the end.
-print_error() { printf "`__c "[Error]" $C_RED` $@\n"; }
+color_black() { printf "`__c "$1" 0`"; }
+color_red() { printf "`__c "$1" 1`"; }
+color_green() { printf "`__c "$1" 2`"; }
+color_yellow() { printf "`__c "$1" 3`"; }
+color_blue() { printf "`__c "$1" 4`"; }
+color_magenta() { printf "`__c "$1" 5`"; }
+color_cyan() { printf "`__c "$1" 6`"; }
+color_gray() { printf "`__c "$1" 7`"; }
 
-# Prints a message with an Info label at the start, and a new line at the end.
-print_info() { printf "`__c "[Info]" $C_BLUE` $@\n"; }
-
-# Prints a message with an Ok label at the start, and a new line at the end.
-print_ok() { printf "`__c "[Ok]" $C_GREEN` $@\n"; }
-
-# Prints a message with a Warning label at the start, and a new line at the end.
-print_warning() { printf "`__c "[Warning]" $C_YELLOW` $@\n"; }
+print_error() { printf "`color_red "[Error]"` $@\n"; }
+print_info() { printf "`color_blue "[Info]"` $@\n"; }
+print_ok() { printf "`color_green "[Ok]"` $@\n"; }
+print_warning() { printf "`color_yellow "[Warning]"` $@\n"; }
 
 br() {
   print_info "Applying new changes";
@@ -39,13 +39,13 @@ br() {
 #     $1: Command.
 cmd_exists() {
   if ! command -v $1 &> /dev/null; then 
-    print_error "`__c $1 $C_CYAN` command doesn't exist.";
+    print_error "`color_cyan $1` command doesn't exist.";
     return 1;
   fi 
 }
 
 __is_cmd_enabled() {
-  cmd_exists $1 > /dev/null 2>&1 && print_warning "`__c $1 $C_CYAN` command is already enabled.";
+  cmd_exists $1 > /dev/null 2>&1 && print_warning "`color_cyan $1` command is already enabled.";
 }
 # Enables Brew on the current terminal session.
 ebrew() {
@@ -93,7 +93,7 @@ jira() {
     branch=$(echo_current_branch);
   }
   [[ $branch =~ (^[A-Za-z]*-[0-9]*) ]] || {
-    print_error "Branch `__c $branch $C_YELLOW` is not a valid ticket name.";
+    print_error "Branch `color_yellow $branch` is not a valid ticket name.";
     return 1;
   }
   run_cmd "open https://$jira_organization.atlassian.net/browse/${BASH_REMATCH[1]}";
@@ -107,7 +107,7 @@ print_cmd() {
 
 question() {
   # https://stackoverflow.com/a/3232082/1054579
-  read -r -p "`__c [Question] $C_MAGENTA` $1 [y/`__c N $C_CYAN`] " __response;
+  read -r -p "`color_magenta [Question]` $1 [y/`color_cyan N`] " __response;
   [[ "$__response" =~ ^([yY][eE][sS]|[yY])$ ]] && return 0;
   return 1;
 }
@@ -142,7 +142,7 @@ vsc() {
   local type="directory";
   is_git_directory "$path" > /dev/null 2>&1 && {
     path=$(cd $path; echo `git rev-parse --show-toplevel`;) 
-    type=`__c "repository" $C_MAGENTA`;
+    type=`color_magenta "repository"`;
   }
   local directory="$(basename "`cd "$path"; pwd`")";
   print_info "Opening $(__c "$directory" 6) $type on VSCode.";

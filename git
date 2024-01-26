@@ -12,7 +12,7 @@ gita() {
 # Deletes a branch locally
 gitbD() {
   branch_locally_exists $1 || return 1;
-  question "Are you sure to force delete `__c $1 $C_RED` locally?"
+  question "Are you sure to force delete `color_red $1` locally?"
   [ $? != 0 ] && return 0;
   run_cmd "$git_switch `git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'`";
   run_cmd "git branch -D $1";
@@ -135,7 +135,7 @@ gitps() {
     # %-* Remove the suffix. ABC-123-qa -> ABC-123
     target_branch="${current_branch%-*}";
 
-    question "Do you want to switch back to branch $(__c $target_branch $C_CYAN)?";
+    question "Do you want to switch back to branch $(color_cyan $target_branch)?";
     [ $? == 0 ] && { run_cmd "$git_switch $target_branch"; }
   fi
 }
@@ -145,7 +145,7 @@ gitps() {
 gitpsd() {
   is_git_directory && has_parameters $@ || return 1;
   branch_on_remote_exists $1 && {
-    question "Do you want to delete `__c $1 $C_RED` `__c "on remote" $C_YELLOW`?";
+    question "Do you want to delete `color_red $1` `color_yellow "on remote"`?";
     [ $? == 0 ] && { 
       run_cmd "git push origin --delete $1";
       run_cmd "git branch --unset-upstream $1";
@@ -164,7 +164,7 @@ gitpsfu() { gitpsu "--force-with-lease"; }
 gitpsm() {
   get_current_branch && local current_branch=$__cmd_value || return 1;
   branch_on_remote_exists $__cmd_value || return 1;
-  question "Are you sure to change the name from `__c $current_branch $C_RED` to `__c $1 $C_GREEN`?"
+  question "Are you sure to change the name from `color_red $current_branch` to `color_green $1`?"
   [ $? != 0 ] && return 0;
   run_cmd "git branch -m $1" &&
   run_cmd "git push origin :$current_branch $1" &&
@@ -232,7 +232,7 @@ gitsw() {
   local on_remote=false;
   branch_on_remote_exists $1 && {
     on_remote=true;
-    question "Do you want to switch to `__c $1 $C_YELLOW` remote branch?";
+    question "Do you want to switch to `color_yellow $1` remote branch?";
     [ $? == 0 ] && {
       gitf;
       run_cmd "$git_switch $1";
@@ -243,7 +243,7 @@ gitsw() {
   if [[ $start_point =~ ^origin/ ]]; then
     ! branch_on_remote_exists ${2#"origin/"} && return 1;
   else
-    question "Do you want to create `__c $1 $C_GREEN` branch from local $(__c $start_point $C_RED)?";
+    question "Do you want to create `color_green $1` branch from local $(color_red $start_point)?";
     [ $? == 0 ] && {
       $on_remote && gitpsd $1;
       run_cmd "$git_switch_c $1 $start_point";
@@ -252,7 +252,7 @@ gitsw() {
     start_point="origin/$start_point";
   fi
 
-  question "Do you want to create `__c $1 $C_GREEN` branch from remote $(__c $start_point $C_CYAN)?";
+  question "Do you want to create `color_green $1` branch from remote $(color_cyan $start_point)?";
   [ $? == 0 ] && {
     $on_remote && gitpsd $1;
     gitf;
@@ -268,7 +268,7 @@ gitsync() {
 
   # Sync should not be done from qa or develop branches.
   if [[ $current_branch == "qa" || $current_branch == "develop" || $current_branch == "dev" ]]; then
-    print_error "Current branch cannot be `__c $current_branch $C_CYAN`"; return 1;
+    print_error "Current branch cannot be `color_cyan $current_branch`"; return 1;
   fi
 
   # If branch on remote doesn't exist, stop execution. Otherwise fetch remote branches.
@@ -279,7 +279,7 @@ gitsync() {
   local new_branch=${current_branch}-$1;
   local switch_cmd="$git_switch_c $new_branch origin/$1";
   if branch_on_remote_exists $new_branch && branch_locally_exists $new_branch; then
-    question "Do you want to update the current `__c $new_branch $C_CYAN` branch?";
+    question "Do you want to update the current `color_cyan $new_branch` branch?";
     [ $? == 0 ] && { switch_cmd="$git_switch $new_branch"; }
   fi
   run_cmd $switch_cmd;
