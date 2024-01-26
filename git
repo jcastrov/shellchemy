@@ -12,7 +12,7 @@ gita() {
 # Deletes a branch locally
 gitbD() {
   branch_locally_exists $1 || return 1;
-  question "Are you sure to force delete `__c $1 1` locally?"
+  question "Are you sure to force delete `__c $1 $C_RED` locally?"
   [ $? != 0 ] && return 0;
   run_cmd "$git_switch `git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'`";
   run_cmd "git branch -D $1";
@@ -145,7 +145,7 @@ gitps() {
 gitpsd() {
   is_git_directory && has_parameters $@ || return 1;
   branch_on_remote_exists $1 && {
-    question "Do you want to delete `__c $1 1` `__c "on remote" 3`?";
+    question "Do you want to delete `__c $1 $C_RED` `__c "on remote" $C_YELLOW`?";
     [ $? == 0 ] && { 
       run_cmd "git push origin --delete $1";
       run_cmd "git branch --unset-upstream $1";
@@ -164,7 +164,7 @@ gitpsfu() { gitpsu "--force-with-lease"; }
 gitpsm() {
   get_current_branch && local current_branch=$__cmd_value || return 1;
   branch_on_remote_exists $__cmd_value || return 1;
-  question "Are you sure to change the name from `__c $current_branch 1` to `__c $1 2`?"
+  question "Are you sure to change the name from `__c $current_branch $C_RED` to `__c $1 $C_GREEN`?"
   [ $? != 0 ] && return 0;
   run_cmd "git branch -m $1" &&
   run_cmd "git push origin :$current_branch $1" &&
@@ -232,7 +232,7 @@ gitsw() {
   local on_remote=false;
   branch_on_remote_exists $1 && {
     on_remote=true;
-    question "Do you want to switch to `__c $1 3` remote branch?";
+    question "Do you want to switch to `__c $1 $C_YELLOW` remote branch?";
     [ $? == 0 ] && {
       gitf;
       run_cmd "$git_switch $1";
@@ -243,7 +243,7 @@ gitsw() {
   if [[ $start_point =~ ^origin/ ]]; then
     ! branch_on_remote_exists ${2#"origin/"} && return 1;
   else
-    question "Do you want to create `__c $1 2` branch from local $(__c $start_point $C_RED)?";
+    question "Do you want to create `__c $1 $C_GREEN` branch from local $(__c $start_point $C_RED)?";
     [ $? == 0 ] && {
       $on_remote && gitpsd $1;
       run_cmd "$git_switch_c $1 $start_point";
@@ -252,7 +252,7 @@ gitsw() {
     start_point="origin/$start_point";
   fi
 
-  question "Do you want to create `__c $1 2` branch from remote $(__c $start_point $C_CYAN)?";
+  question "Do you want to create `__c $1 $C_GREEN` branch from remote $(__c $start_point $C_CYAN)?";
   [ $? == 0 ] && {
     $on_remote && gitpsd $1;
     gitf;

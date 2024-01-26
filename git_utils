@@ -24,8 +24,8 @@ fi
 #     $1: Branch name
 __branch_exists() {
   set_cmd_value "$1";
-  [ -z "$__cmd_value" ] && { print_warning "Branch `__c $3 6` doesn't exist `__c "$2" 5`."; return 1; }
-  print_ok "Branch `__c $3 6` exists $2";
+  [ -z "$__cmd_value" ] && { print_warning "Branch `__c $3 $C_CYAN` doesn't exist `__c "$2" $C_MAGENTA`."; return 1; }
+  print_ok "Branch `__c $3 $C_CYAN` exists $2";
   return 0;
 }
 
@@ -60,10 +60,10 @@ get_current_branch() {
   # If branch doesn't exist, set SHA instead
   set_cmd_value "git branch --show-current" || {
     set_cmd_value "git rev-parse --short HEAD" || return 1;
-    print_info "Current SHA: `__c $__cmd_value 6`";
+    print_info "Current SHA: `__c $__cmd_value $C_CYAN`";
     return 0;
   };
-  print_info "Current branch: `__c $__cmd_value 6`";
+  print_info "Current branch: `__c $__cmd_value $C_CYAN`";
   return 0;
 }
 
