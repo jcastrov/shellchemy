@@ -98,15 +98,15 @@ gitprc() {
   }
 
   if [[ $destination_branch == "Release" ]]; then
-    # git branch -r: Get remote branches.
-    # grep -E '^ *origin/Release-20*': Filter branches that starts with " origin/Release-20*".
-    # sed -e 's/^ *origin\///': Removes " origin/".
-    # sort -rV: Sort lines. V is alphabetic order. -r is reverse order.
-    # head -n 1: Shows the first result only
-    local command="git branch -r | grep -E '^ *origin/Release-20*' | sed -e 's/^ *origin\///' | sort -rV | head -n 1";
-    run_cmd "$command" "destination_branch"
+    get_latest_release_branch "destination_branch";
+  elif [[ $source_branch == "Release" ]]; then
+    get_latest_release_branch "source_branch";
   fi
 
+  branch_on_remote_exists $source_branch || return 1;
+  branch_on_remote_exists $destination_branch || return 1;
+
+  print_ok "Comparing branch `color_cyan $source_branch` with branch `color_magenta $destination_branch`"
   run_cmd "open `get_repo_url`/compare/$destination_branch...$source_branch"
 }
 
