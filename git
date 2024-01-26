@@ -96,6 +96,17 @@ gitprc() {
     source_branch=$(echo_current_branch);
     destination_branch=$1;
   }
+
+  if [[ $destination_branch == "Release" ]]; then
+    # git branch -r: Get remote branches.
+    # grep -E '^ *origin/Release-20*': Filter branches that starts with " origin/Release-20*".
+    # sed -e 's/^ *origin\///': Removes " origin/".
+    # sort -rV: Sort lines. V is alphabetic order. -r is reverse order.
+    # head -n 1: Shows the first result only
+    local command="git branch -r | grep -E '^ *origin/Release-20*' | sed -e 's/^ *origin\///' | sort -rV | head -n 1";
+    run_cmd "$command" "destination_branch"
+  fi
+
   run_cmd "open `get_repo_url`/compare/$destination_branch...$source_branch"
 }
 
