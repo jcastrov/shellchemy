@@ -34,7 +34,7 @@ gitbm() { run_cmd "git branch -m $@"; }
 gitc() {
   has_parameters $@ || return 1;
   local current_branch=$(echo_current_branch);
-  __mi "Committing your changes.";
+  print_info "Committing your changes.";
   run_cmd "git commit -m \"$current_branch: $1\" $2";
 }
 gitca() { gitc "$1" "--amend"; }
@@ -48,7 +48,7 @@ gitchpc() { run_cmd "git cherry-pick --continue"; }
 
 # Fetches branches
 gitf() { 
-  __mi "Downloading objects and refs from origin..."
+  print_info "Downloading objects and refs from origin..."
   run_cmd "git fetch -p";
 }
 

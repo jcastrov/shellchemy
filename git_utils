@@ -60,10 +60,10 @@ get_current_branch() {
   # If branch doesn't exist, set SHA instead
   set_cmd_value "git branch --show-current" || {
     set_cmd_value "git rev-parse --short HEAD" || return 1;
-    __mi "Current SHA: `__c $__cmd_value 6`";
+    print_info "Current SHA: `__c $__cmd_value 6`";
     return 0;
   };
-  __mi "Current branch: `__c $__cmd_value 6`";
+  print_info "Current branch: `__c $__cmd_value 6`";
   return 0;
 }
 

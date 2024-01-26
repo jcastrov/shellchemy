@@ -20,7 +20,7 @@ __c() { printf "%s" "$(tput setaf ${2:-7})${1}$(tput sgr0)"; }
 print_error() { printf "`__c "[Error]" 1` $@\n"; }
 
 # Prints a message with an Info label at the start, and a new line at the end.
-__mi() { printf "`__c "[Info]" 4` $@\n"; }
+print_info() { printf "`__c "[Info]" 4` $@\n"; }
 
 # Prints a message with an Ok label at the start, and a new line at the end.
 __mo() { printf "`__c "[Ok]" 2` $@\n"; }
@@ -29,7 +29,7 @@ __mo() { printf "`__c "[Ok]" 2` $@\n"; }
 __mw() { printf "`__c "[Warning]" 3` $@\n"; }
 
 br() {
-  __mi "Applying new changes";
+  print_info "Applying new changes";
   run_cmd ". $(dirname "${BASH_SOURCE[0]}")/index";
 }
 
@@ -145,6 +145,6 @@ vsc() {
     type=`__c "repository" 5`;
   }
   local directory="$(basename "`cd "$path"; pwd`")";
-  __mi "Opening $(__c "$directory" 6) $type on VSCode.";
+  print_info "Opening $(__c "$directory" 6) $type on VSCode.";
   run_cmd "code \"$path\"";
 }
