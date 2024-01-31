@@ -23,9 +23,14 @@ fi
 # Checks if a branch exists.
 #     $1: Branch name
 __branch_exists() {
-  set_cmd_value "$1";
-  [ -z "$__cmd_value" ] && { print_warning "Branch `color_cyan $3` doesn't exist `color_magenta "$2"`."; return 1; }
-  print_ok "Branch `color_cyan $3` exists $2";
+  local source=`color_magenta "$2"`;
+  local branch=`color_cyan $3`;
+  print_info "Verifying if branch $branch exists $source";
+  run_cmd "$1" "result";
+  [ -z "$result" ] && { 
+    print_warning "Branch $branch doesn't exist $source.";
+    return 1;
+  }
   return 0;
 }
 
