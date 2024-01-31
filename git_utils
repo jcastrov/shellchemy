@@ -58,17 +58,17 @@ echo_current_branch() {
   return 0;
 }
 
-# Gets the name of the current branch on the current directory.
 get_current_branch() {
   cmd_exists git || return 1;
-  
-  # If branch doesn't exist, set SHA instead
-  set_cmd_value "git branch --show-current" || {
-    set_cmd_value "git rev-parse --short HEAD" || return 1;
-    print_info "Current SHA: `color_cyan $__cmd_value`";
-    return 0;
+
+  print_info "Getting current branch...";
+  run_cmd "git branch --show-current" $1;
+
+  [ -z "$1" ] && {
+    print_info "Branch not available. Getting current SHA...";
+    run_cmd "git rev-parse --short HEAD" $1;
+    [ -z "$1" ] && return 1;
   };
-  print_info "Current branch: `color_cyan $__cmd_value`";
   return 0;
 }
 
