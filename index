@@ -117,9 +117,9 @@ question() {
 run_cmd() {
   print_cmd "$1";
   if [[ $# == 1 ]]; then
-    eval "$1";
+    eval $1;
   else
-    eval "$2=$(eval "$1")"
+    eval "$2=\"$(eval $1)\""
   fi
 
   return $?;
