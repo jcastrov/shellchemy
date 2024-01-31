@@ -72,6 +72,13 @@ get_current_branch() {
   return 0;
 }
 
+get_main_branch() {
+  cmd_exists git || return 1;
+  print_info "Getting name of the main branch...";
+  local command="git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'";
+  run_cmd "$command" $1;
+}
+
 get_latest_release_branch() {
   print_info "Getting latest Release branch..."
   # git branch -r: Get remote branches.
