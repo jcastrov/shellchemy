@@ -99,14 +99,17 @@ gitprc() {
 
   if [[ $destination_branch == "Release" ]]; then
     get_latest_release_branch "destination_branch";
-  elif [[ $source_branch == "Release" ]]; then
+  else
+    branch_on_remote_exists $destination_branch || return 1;
+  fi
+  
+  if [[ $source_branch == "Release" ]]; then
     get_latest_release_branch "source_branch";
+  else
+    branch_on_remote_exists $source_branch || return 1;
   fi
 
-  branch_on_remote_exists $source_branch || return 1;
-  branch_on_remote_exists $destination_branch || return 1;
-
-  print_ok "Comparing branch `color_cyan $source_branch` with branch `color_magenta $destination_branch`"
+  print_ok "Comparing branch `color_cyan $source_branch` with branch `color_cyan $destination_branch`"
   run_cmd "open `get_repo_url`/compare/$destination_branch...$source_branch"
 }
 
