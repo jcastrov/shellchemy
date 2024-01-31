@@ -81,12 +81,14 @@ get_main_branch() {
 
 get_latest_release_branch() {
   print_info "Getting latest Release branch..."
+
   # git branch -r: Get remote branches.
   # grep -E '^ *origin/Release-20*': Filter branches that starts with " origin/Release-20*".
   # sed -e 's/^ *origin\///': Removes " origin/".
   # sort -rV: Sort lines. V is alphabetic order. -r is reverse order.
   # head -n 1: Shows the first result only
   local command="git branch -r | grep -E '^ *origin/Release-20*' | sed -e 's/^ *origin\///' | sort -rV | head -n 1";
+
   run_cmd "$command" "$1";
 }
 
