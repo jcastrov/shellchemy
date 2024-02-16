@@ -201,7 +201,7 @@ gitrb() { run_cmd "git rebase $@"; }
 gitrbm() { gitrb origin/master; }
 gitrba() { gitrb --abort; }
 gitrbc() { gitrb --continue; }
-gitrbi() { gitrb -i $@; }
+gitrbi() { gitrb "-i $@"; }
 gitrbih() { gitrbi HEAD~$1; }
 gitrbio() { gitrbi origin/$1; }
 gitrbq() { gitrb --quit; }
