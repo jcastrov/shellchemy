@@ -297,20 +297,25 @@ gitsync() {
   ! branch_on_remote_exists $1 && return 1;
   gitf;
 
-  # Check if the new branch exists or if it should be recreated.
   local new_branch=${current_branch}-$1;
-  local switch_cmd="$git_switch_c $new_branch origin/$1";
+
+  # Verify whether the new branch exists or needs to be recreated.
   if branch_on_remote_exists $new_branch && branch_locally_exists $new_branch; then
     question "Do you want to update the current `color_cyan $new_branch` branch?";
-    [ $? == 0 ] && { switch_cmd="$git_switch $new_branch"; }
+    [ $? == 0 ] && { run_cmd "$git_switch $new_branch"; }
+  else
+    run_cmd "$git_switch_c $new_branch origin/$1";
   fi
-  run_cmd "$switch_cmd";
 
-  # Only use "ours" strategy with the main branch of the repo.
-  if [[ $current_branch == "main" || $current_branch == "master" ]]; then
-    question "Do you want to use \"ours\" merge strategy?";
-    [ $? == 0 ] && { gitmo $current_branch "-s ours"; return 0; }
-  fi
+  question "Do you want to merge `color_cyan $new_branch` branch with the main branch using \"ours\" strategy?";
+  [ $? == 0 ] && {
+    get_main_branch "main_branch";
+    gitmo $main_branch "-s ours"; 
+    if [[ $current_branch == $main_branch ]]; then
+      return 0;
+    fi
+  }
+
   gitmo $current_branch;
 }
 
