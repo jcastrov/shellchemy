@@ -96,7 +96,7 @@ jira() {
     print_error "Branch `color_yellow $branch` is not a valid ticket name.";
     return 1;
   }
-  run_cmd "open https://$jira_organization.atlassian.net/browse/${BASH_REMATCH[1]}";
+  run_cmd "open https://$BP_JIRA_ORGANIZATION.atlassian.net/browse/${BASH_REMATCH[1]}";
 }
 
 # Prints a string with a light black foreground.
