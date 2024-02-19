@@ -299,13 +299,13 @@ gitsync() {
 
   local new_branch=${current_branch}-$1;
 
+  local switch_cmd="$git_switch_c $new_branch origin/$1";
   # Verify whether the new branch exists or needs to be recreated.
   if branch_on_remote_exists $new_branch && branch_locally_exists $new_branch; then
     question "Do you want to update the current `color_cyan $new_branch` branch?";
-    [ $? == 0 ] && { run_cmd "$git_switch $new_branch"; }
-  else
-    run_cmd "$git_switch_c $new_branch origin/$1";
+    [ $? == 0 ] && { switch_cmd="$git_switch $new_branch"; }
   fi
+  run_cmd "$switch_cmd";
 
   question "Do you want to merge `color_cyan $new_branch` branch with the main branch using \"ours\" strategy?";
   [ $? == 0 ] && {
