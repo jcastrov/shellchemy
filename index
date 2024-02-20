@@ -45,7 +45,7 @@ cmd_exists() {
 }
 
 __is_cmd_enabled() {
-  cmd_exists $1 > /dev/null 2>&1 && print_warning "`color_cyan $1` command is already enabled.";
+  cmd_exists $1 > /dev/null 2>&1 && print_info "`color_cyan $1` command is already enabled.";
 }
 # Enables Brew on the current terminal session.
 ebrew() {
