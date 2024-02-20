@@ -75,6 +75,10 @@ epython() {
 }
 
 
+echo_jira_ticket_url() {
+  echo "https://$BP_JIRA_ORGANIZATION.atlassian.net/browse/$1";
+}
+
 # Checks if a function has parameters. Returns 0 if there are paramters. 
 # Otherwise returns 1.
 #     $@: Parameters
@@ -96,7 +100,8 @@ jira() {
     print_error "Branch `color_yellow $branch` is not a valid ticket name.";
     return 1;
   }
-  run_cmd "open https://$BP_JIRA_ORGANIZATION.atlassian.net/browse/${BASH_REMATCH[1]}";
+  
+  run_cmd "open $(echo_jira_ticket_url ${BASH_REMATCH[1]})";
 }
 
 # Prints a string with a light black foreground.
