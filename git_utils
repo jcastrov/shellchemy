@@ -92,6 +92,11 @@ get_latest_release_branch() {
   run_cmd "$command" "$1";
 }
 
+get_api_repo_url() {
+  local repo_path=$(eval "git rev-parse --show-toplevel");
+  echo "https://api.github.com/repos/$(basename $(dirname "$repo_path"))/$(basename "$repo_path")";
+}
+
 # Gets the URL of the repository. Make sure your directory and parent directory
 # have the name of the URL of the repo. For instance, if your repo is
 # https://github.com/microsoft/vscode, the root directory name must be "vscode"
