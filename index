@@ -10,6 +10,7 @@ C_CYAN=6;
 C_GRAY=7;
 
 source "$(dirname "${BASH_SOURCE[0]}")/git"
+source "$(dirname "${BASH_SOURCE[0]}")/windows"
 
 # Colors a string ($1) with a number ($2)
 __c() { printf "%s" "$(tput setaf ${2:-7})${1}$(tput sgr0)"; }

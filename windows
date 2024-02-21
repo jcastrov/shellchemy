@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# Restarts explorer.exe. Useful when snipping tool stops working
+restartexplorer() {
+  run_cmd "powershell.exe Stop-Process -Name “explorer” -Force"
+}
