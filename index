@@ -37,6 +37,14 @@ print_info() { printf "`color_blue "[Info]"` $@\n"; }
 print_ok() { printf "`color_green "[Ok]"` $@\n"; }
 print_warning() { printf "`color_yellow "[Warning]"` $@\n"; }
 
+echo_regex_substring() {
+  local substring=$(echo "$1" | grep -oE "$2");
+  if [[ -z $substring ]]; then
+    return 1;
+  fi
+  echo "$substring";
+}
+
 br() {
   print_info "Applying new changes";
   run_cmd ". $(dirname "${BASH_SOURCE[0]}")/index";
