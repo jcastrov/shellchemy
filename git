@@ -158,15 +158,17 @@ gitps() {
   run_cmd "git push $@";
   [ $? != 0 ] && { return $?; }
   local current_branch=$(echo_current_branch);
-  local target_branch=$current_branch;
 
   # If the branch ends with "-develop" or "-qa"
   if [[ $current_branch =~ -(develop|qa)$ ]]; then
-    # ##*- Remove the branch name. ABC-123-qa -> qa
-    gitprc "${current_branch##*-}";
-
+    ##*- Remove the branch name. ABC-123-qa -> qa
+    local base_branch="${current_branch##*-}";
+  
     # %-* Remove the suffix. ABC-123-qa -> ABC-123
-    target_branch="${current_branch%-*}";
+    local target_branch="${current_branch%-*}";
+
+    question "Do you want to create a Pull Request (head: $(color_cyan $current_branch). base: $(color_magenta $base_branch))?";
+    [ $? == 0 ] && { run_cmd "gitprc $base_branch"; }
 
     question "Do you want to switch back to branch $(color_cyan $target_branch)?";
     [ $? == 0 ] && { run_cmd "$git_switch $target_branch"; }
