@@ -113,12 +113,12 @@ jira() {
     ! is_git_directory && return 1;
     branch=$(echo_current_branch);
   }
-  [[ $branch =~ (^[A-Za-z]*-[0-9]*) ]] || {
+  local ticket_name=$(echo_regex_substring $branch "^[[:alpha:]]+-[[:digit:]]+");
+  if [[ -z $ticket_name ]]; then
     print_error "Branch `color_yellow $branch` is not a valid ticket name.";
     return 1;
-  }
-  
-  run_cmd "open $(echo_jira_ticket_url ${BASH_REMATCH[1]})";
+  fi
+  run_cmd "open $(echo_jira_ticket_url $ticket_name)";
 }
 
 # Prints a string with a light black foreground.
