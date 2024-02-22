@@ -9,8 +9,16 @@ C_MAGENTA=5;
 C_CYAN=6;
 C_GRAY=7;
 
-source "$(dirname "${BASH_SOURCE[0]}")/git"
-source "$(dirname "${BASH_SOURCE[0]}")/windows"
+# Scripts path depends on the current shell.
+local scripts_path=$(dirname "${BASH_SOURCE[0]}");
+if [[ -n $ZSH_VERSION ]]; then
+  scripts_path=${0:A:h};
+fi;
+
+source "$scripts_path/git"
+source "$scripts_path/git_utils"
+source "$scripts_path/windows"
+
 
 # Colors a string ($1) with a number ($2)
 __c() { printf "%s" "$(tput setaf ${2:-7})${1}$(tput sgr0)"; }

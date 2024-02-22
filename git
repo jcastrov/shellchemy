@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-source "$(dirname "${BASH_SOURCE[0]}")/git_utils"
-
 # Adds files and shows a quick status
 gita() {
   has_parameters $@ || return 1;
