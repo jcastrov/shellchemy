@@ -9,17 +9,6 @@ C_MAGENTA=5;
 C_CYAN=6;
 C_GRAY=7;
 
-# Scripts path depends on the current shell.
-local scripts_path=$(dirname "${BASH_SOURCE[0]}");
-if [[ -n $ZSH_VERSION ]]; then
-  scripts_path=${0:A:h};
-fi;
-
-source "$scripts_path/git"
-source "$scripts_path/git_utils"
-source "$scripts_path/windows"
-
-
 # Colors a string ($1) with a number ($2)
 __c() { printf "%s" "$(tput setaf ${2:-7})${1}$(tput sgr0)"; }
 
@@ -45,9 +34,20 @@ echo_regex_substring() {
   echo "$substring";
 }
 
+# Scripts path depends on the current shell.
+bash_scripts_path=$(dirname "${BASH_SOURCE[0]}");
+if [[ -n $ZSH_VERSION ]]; then
+  bash_scripts_path=${0:A:h};
+fi;
+
+source "$bash_scripts_path/git"
+source "$bash_scripts_path/git_utils"
+source "$bash_scripts_path/windows"
+
+
 br() {
   print_info "Applying new changes";
-  run_cmd ". $(dirname "${BASH_SOURCE[0]}")/index";
+  run_cmd ". $bash_scripts_path/index";
 }
 
 # Checks if a command is avaiable in your current session. Returns 0 if
