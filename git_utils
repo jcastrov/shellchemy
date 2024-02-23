@@ -9,7 +9,7 @@ git_switch_c='git switch -C';
 #       $(eval "git --version") ➡️  git version 2.25.0
 # - Extract the first pair of numbers with a regular expression
 #       =~ ([0-9]{1}.[0-9]{2}) ➡️  2.25
-local git_version=$(echo_regex_substring "`git --version`" "([0-9]{1}.[0-9]{2})");
+git_version=$(echo_regex_substring "`git --version`" "([0-9]{1}.[0-9]{2})");
 
 # - Remove the decimal separator   | tr -d . ➡️  225
 # - Check if the extracted number is lower than 223
