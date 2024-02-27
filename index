@@ -1,30 +1,20 @@
 #!/usr/bin/env bash
 
-C_BlACK=0;
-C_RED=1;
-C_GREEN=2;
-C_YELLOW=3;
-C_BLUE=4;
-C_MAGENTA=5;
-C_CYAN=6;
-C_GRAY=7;
+# Scripts path depends on the current shell.
+bash_scripts_path=$(dirname "${BASH_SOURCE[0]}");
+if [[ -n $ZSH_VERSION ]]; then bash_scripts_path=${0:A:h}; fi
 
-# Colors a string ($1) with a number ($2)
-__c() { printf "%s" "$(tput setaf ${2:-7})${1}$(tput sgr0)"; }
+source "$bash_scripts_path/print"
+source "$bash_scripts_path/git_utils"
+source "$bash_scripts_path/git"
+source "$bash_scripts_path/github"
+source "$bash_scripts_path/windows"
 
-color_black() { printf "`__c "$1" 0`"; }
-color_red() { printf "`__c "$1" 1`"; }
-color_green() { printf "`__c "$1" 2`"; }
-color_yellow() { printf "`__c "$1" 3`"; }
-color_blue() { printf "`__c "$1" 4`"; }
-color_magenta() { printf "`__c "$1" 5`"; }
-color_cyan() { printf "`__c "$1" 6`"; }
-color_gray() { printf "`__c "$1" 7`"; }
+br() {
+  print_info "Applying new changes";
+  run_cmd ". $bash_scripts_path/index";
+}
 
-print_error() { printf "`color_red "e:"` $@\n"; }
-print_info() { printf "`color_blue "i:"` $@\n"; }
-print_ok() { printf "`color_green "k:"` $@\n"; }
-print_warning() { printf "`color_yellow "w:"` $@\n"; }
 
 echo_regex_substring() {
   local substring=$(echo "$1" | grep -oE "$2");
@@ -32,23 +22,6 @@ echo_regex_substring() {
     return 1;
   fi
   echo "$substring";
-}
-
-# Scripts path depends on the current shell.
-bash_scripts_path=$(dirname "${BASH_SOURCE[0]}");
-if [[ -n $ZSH_VERSION ]]; then
-  bash_scripts_path=${0:A:h};
-fi;
-
-source "$bash_scripts_path/git_utils"
-source "$bash_scripts_path/git"
-source "$bash_scripts_path/github"
-source "$bash_scripts_path/windows"
-
-
-br() {
-  print_info "Applying new changes";
-  run_cmd ". $bash_scripts_path/index";
 }
 
 # Checks if a command is avaiable in your current session. Returns 0 if
@@ -92,7 +65,6 @@ epython() {
   run_cmd "python --version";
 }
 
-
 echo_jira_ticket_url() {
   echo "https://$BP_JIRA_ORGANIZATION.atlassian.net/browse/$1";
 }
@@ -120,19 +92,6 @@ jira() {
     return 1;
   fi
   run_cmd "open $(echo_jira_ticket_url $ticket_name)";
-}
-
-# Prints a string with a light black foreground.
-print_cmd() { 
-  # awk $1=$1 removes extra spaces
-  printf "\033[1;30m$ %s\n" "`echo "$@" | awk '$1=$1'`$(tput sgr0)"; 
-}
-
-question() {
-  # https://stackoverflow.com/a/3232082/1054579
-  read -r -p "`color_magenta q:` $1 [y/`color_cyan N`] " __response;
-  [[ "$__response" =~ ^([yY][eE][sS]|[yY])$ ]] && return 0;
-  return 1;
 }
 
 # Prints and runs a command ($1).
