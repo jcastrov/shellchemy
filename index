@@ -129,7 +129,7 @@ print_cmd() {
 
 question() {
   # https://stackoverflow.com/a/3232082/1054579
-  read -r -p "`color_magenta [Question]` $1 [y/`color_cyan N`] " __response;
+  read -r -p "`color_magenta q:` $1 [y/`color_cyan N`] " __response;
   [[ "$__response" =~ ^([yY][eE][sS]|[yY])$ ]] && return 0;
   return 1;
 }
