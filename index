@@ -21,10 +21,10 @@ color_magenta() { printf "`__c "$1" 5`"; }
 color_cyan() { printf "`__c "$1" 6`"; }
 color_gray() { printf "`__c "$1" 7`"; }
 
-print_error() { printf "`color_red "[Error]"` $@\n"; }
-print_info() { printf "`color_blue "[Info]"` $@\n"; }
-print_ok() { printf "`color_green "[Ok]"` $@\n"; }
-print_warning() { printf "`color_yellow "[Warning]"` $@\n"; }
+print_error() { printf "`color_red "e:"` $@\n"; }
+print_info() { printf "`color_blue "i:"` $@\n"; }
+print_ok() { printf "`color_green "k:"` $@\n"; }
+print_warning() { printf "`color_yellow "w:"` $@\n"; }
 
 echo_regex_substring() {
   local substring=$(echo "$1" | grep -oE "$2");
