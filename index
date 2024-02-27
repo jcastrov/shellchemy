@@ -58,31 +58,31 @@ cmd_exists() {
   if ! command -v $1 &> /dev/null; then 
     print_error "`color_cyan $1` command doesn't exist.";
     return 1;
-  fi 
+  fi
 }
 
-__is_cmd_enabled() {
-  cmd_exists $1 > /dev/null 2>&1 && print_info "`color_cyan $1` command is already enabled.";
-}
 # Enables Brew on the current terminal session.
 ebrew() {
-  __is_cmd_enabled brew && return 1;
+  cmd_exists brew > /dev/null 2>&1 && return 1;
+  print_info "Enabling `color_cyan brew`...";
   run_cmd "$(/opt/homebrew/bin/brew shellenv)";
   run_cmd "brew --version";
 }
 
 # Enables NVM on the current terminal session.
 envm() {
-  __is_cmd_enabled nvm && return 1;
+  cmd_exists nvm > /dev/null 2>&1 && return 1;
   ebrew;
+  print_info "Enabling `color_cyan nvm`...";
   run_cmd "export NVM_DIR=~/.nvm";
   run_cmd "source $(brew --prefix nvm)/nvm.sh";
   run_cmd "node --version";
 }
 
 epython() {
-  __is_cmd_enabled python && return 1;
+  cmd_exists python > /dev/null 2>&1 && return 1;
   ebrew;
+  print_info "Enabling `color_cyan python`...";
   export PYENV_ROOT="$HOME/.pyenv"
   command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
   eval "$(pyenv init -)"
