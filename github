@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+
+__prepate_branches() {
+  local action=$1;
+  local head=$2;
+  local base=$3;
+  local base_original_name=$3;
+
+  is_git_directory && has_parameters $@ || return 1;
+  if [[ $action == "pr" ]]; then
+    ebrew;
+    cmd_exists gh || return 1;
+  fi
+
+  if [[ $# == 2 ]]; then
+    head=$(echo_current_branch);
+    base=$2;
+    base_original_name=$2;
+  fi
+  gitf;
+  if [[ $head == "Release" ]]; then
+    get_latest_release_branch "head";
+  else
+    branch_on_remote_exists $head || return 1;
+  fi
+
+  if [[ $base == "Release" ]]; then
+    get_latest_release_branch "base";
+  else
+    branch_on_remote_exists $base || return 1;
+  fi
+
+  if [[ $action == "compare" ]]; then
+    print_ok "Comparing branch `color_cyan $head` with branch `color_cyan $base`";
+    run_cmd "open `get_repo_url`/compare/$base...$head";
+    return 0;
+  fi
+
+  local description=$(echo_jira_ticket_url $head);
+  local title="[$base_original_name] $head";
+  # if [[ -n $2 ]]; then
+  #   title="$title: $2";
+  # fi
+
+  item() { echo "\n   `color_cyan $1:` ${!1}"; }
+  print_info "Pull Request details: `item base``item head``item title``item description`";
+  question "Do you want to continue?";
+  if [[ $? == 0 ]]; then
+    print_info "Creating Pull Request on GitHub";
+    run_cmd "gh pr create --base $base --head $head --title \"$title\" --body \"$description\""; # --draft
+  fi
+}
+
+# Compares the source branch (Current branch) with the destination branch ($1)
+# on the repo URL. If $2 is specified, $2 will be the source branch instead.
+#     $1: Destination branch
+#     $2 (Optional): Source branch
+gitcompare() { 
+  __prepate_branches "compare" $@;
+}
+
+gitprc() {
+  __prepate_branches "pr" $@;
+}

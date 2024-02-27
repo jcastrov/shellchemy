@@ -96,50 +96,6 @@ gitof() {
 gitpl() { run_cmd "git pull"; }
 gitplr() { run_cmd "git pull -r"; }
 
-# Compares the source branch (Current branch) with the destination branch ($1)
-# on the repo URL. If $2 is specified, $2 will be the source branch instead.
-#     $1: Destination branch
-#     $2 (Optional): Source branch
-gitcompare() { 
-  is_git_directory && has_parameters $@ || return 1;
-
-  local source_branch=$1;
-  local destination_branch=$2;
-  [ $# == 1 ] && {
-    source_branch=$(echo_current_branch);
-    destination_branch=$1;
-  }
-
-  if [[ $destination_branch == "Release" ]]; then
-    get_latest_release_branch "destination_branch";
-  else
-    branch_on_remote_exists $destination_branch || return 1;
-  fi
-  
-  if [[ $source_branch == "Release" ]]; then
-    get_latest_release_branch "source_branch";
-  else
-    branch_on_remote_exists $source_branch || return 1;
-  fi
-
-  print_ok "Comparing branch `color_cyan $source_branch` with branch `color_cyan $destination_branch`"
-  run_cmd "open `get_repo_url`/compare/$destination_branch...$source_branch"
-}
-
-gitprc() {
-  ebrew;
-  is_git_directory && has_parameters $@ && cmd_exists gh || return 1;
-
-  local current_branch=$(echo_current_branch);
-  local description=$(echo_jira_ticket_url $current_branch);
-  local title="[$1] $current_branch";
-  if [[ -n $2 ]]; then
-    title="$title: $2";
-  fi
-
-  echo "gh pr create --base $1 --head $current_branch --title \"$title\" --body \"$description\" --draft"
-}
-
 # Searches for pull requests on the repo URL, where the source branch is the
 # current branch. If #1 is specified, $1 will be the search text.
 #     $1 (Optional): Search text

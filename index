@@ -40,8 +40,9 @@ if [[ -n $ZSH_VERSION ]]; then
   bash_scripts_path=${0:A:h};
 fi;
 
-source "$bash_scripts_path/git"
 source "$bash_scripts_path/git_utils"
+source "$bash_scripts_path/git"
+source "$bash_scripts_path/github"
 source "$bash_scripts_path/windows"
 
 
