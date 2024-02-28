@@ -4,6 +4,12 @@
 bash_scripts_path=$(dirname "${BASH_SOURCE[0]}");
 if [[ -n $ZSH_VERSION ]]; then bash_scripts_path=${0:A:h}; fi
 
+echo_regex_substring() {
+  local substring=$(echo "$1" | grep -oE "$2");
+  [ -z $substring ] && { return 1; }
+  echo "$substring";
+}
+
 source "$bash_scripts_path/print"
 source "$bash_scripts_path/git_utils"
 source "$bash_scripts_path/git"
@@ -13,15 +19,6 @@ source "$bash_scripts_path/windows"
 br() {
   print_info "Applying new changes";
   run_cmd ". $bash_scripts_path/index";
-}
-
-
-echo_regex_substring() {
-  local substring=$(echo "$1" | grep -oE "$2");
-  if [[ -z $substring ]]; then
-    return 1;
-  fi
-  echo "$substring";
 }
 
 # Checks if a command is avaiable in your current session. Returns 0 if
