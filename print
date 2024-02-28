@@ -10,21 +10,40 @@ C_CYAN=6;
 C_GRAY=7;
 
 # Colors a string ($1) with a number ($2)
-__c() { printf "%s" "$(tput setaf ${2:-7})${1}$(tput sgr0)"; }
+__c() { printf "%s" "$(tput $3 ${2:-7})${1}$(tput sgr0)"; }
 
-color_black() { printf "`__c "$1" 0`"; }
-color_red() { printf "`__c "$1" 1`"; }
-color_green() { printf "`__c "$1" 2`"; }
-color_yellow() { printf "`__c "$1" 3`"; }
-color_blue() { printf "`__c "$1" 4`"; }
-color_magenta() { printf "`__c "$1" 5`"; }
-color_cyan() { printf "`__c "$1" 6`"; }
-color_gray() { printf "`__c "$1" 7`"; }
+color_black() { printf "`__c "$1" 0 setaf`"; }
+color_red() { printf "`__c "$1" 1 setaf`"; }
+color_green() { printf "`__c "$1" 2 setaf`"; }
+color_yellow() { printf "`__c "$1" 3 setaf`"; }
+color_blue() { printf "`__c "$1" 4 setaf`"; }
+color_magenta() { printf "`__c "$1" 5 setaf`"; }
+color_cyan() { printf "`__c "$1" 6 setaf`"; }
+color_gray() { printf "`__c "$1" 7 setaf`"; }
+bg_black() { printf "`__c "$1" 0 setab`"; }
+bg_red() { printf "`__c "$1" 1 setab`"; }
+bg_green() { printf "`__c "$1" 2 setab`"; }
+bg_yellow() { printf "`__c "$1" 3 setab`"; }
+bg_blue() { printf "`__c "$1" 4 setab`"; }
+bg_magenta() { printf "`__c "$1" 5 setab`"; }
+bg_cyan() { printf "`__c "$1" 6 setab`"; }
+bg_gray() { printf "`__c "$1" 7 setab`"; }
 
-print_error() { printf "`color_red "e:"` $@\n"; }
-print_info() { printf "`color_blue "i:"` $@\n"; }
-print_ok() { printf "`color_green "k:"` $@\n"; }
-print_warning() { printf "`color_yellow "w:"` $@\n"; }
+[ ${ZSH_VERSION} ] && {
+  color_black() { printf "%s" "%F{black}${1}%f"; }
+  color_red() { printf "%s" "%F{red}${1}%f"; }
+  color_green() { printf "%s" "%F{green}${1}%f"; }
+  color_yellow() { printf "%s" "%F{yellow}${1}%f"; }
+  color_blue() { printf "%s" "%F{blue}${1}%f"; }
+  color_magenta() { printf "%s" "%F{magenta}${1}%f"; }
+  color_cyan() { printf "%s" "%F{cyan}${1}%f"; }
+  color_gray() { printf "%s" "%F{white}${1}%f"; }
+}
+
+print_error() { printf "`color_red "║e:"` $@\n"; }
+print_info() { printf "`color_blue "║i:"` $@\n"; }
+print_ok() { printf "`color_green "║k:"` $@\n"; }
+print_warning() { printf "`color_yellow "║w:"` $@\n"; }
 
 # Prints a string with a light black foreground.
 print_cmd() { 
@@ -34,7 +53,7 @@ print_cmd() {
 
 question() {
   # https://stackoverflow.com/a/3232082/1054579
-  read -r -p "`color_magenta q:` $1 [y/`color_cyan N`] " __response;
+  read -r -p "`color_magenta ║q:` $1 [y/`color_cyan N`] " __response;
   [[ "$__response" =~ ^([yY][eE][sS]|[yY])$ ]] && return 0;
   return 1;
 }
