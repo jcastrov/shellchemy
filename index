@@ -108,13 +108,13 @@ run_cmd() {
 # Opens VSCode for the current directory. If $1 is specified, VSCode opens for
 # the root of the git repository, or that path.
 vsc() {
-  local path="${1:-.}";
+  local vsc_path="${1:-.}";
   local type="directory";
-  is_git_directory "$path" > /dev/null 2>&1 && {
-    path=$(cd $path; echo `git rev-parse --show-toplevel`;) 
+  is_git_directory "$vsc_path" > /dev/null 2>&1 && {
+    vsc_path=$(cd $vsc_path; echo `git rev-parse --show-toplevel`;) 
     type=`color_magenta "repository"`;
   }
-  local directory="$(basename "`cd "$path"; pwd`")";
+  local directory="$(basename "`cd "$vsc_path"; pwd`")";
   print_info "Opening $(__c "$directory" 6) $type on VSCode.";
-  run_cmd "code \"$path\"";
+  run_cmd "code \"$vsc_path\"";
 }
