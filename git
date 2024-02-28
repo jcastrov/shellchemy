@@ -134,12 +134,14 @@ gitps() {
 # Deletes a branch on remote.
 #     $1: Branch name
 gitpsd() {
-  is_git_directory && has_parameters $@ || return 1;
-  branch_on_remote_exists $1 && {
-    question "Do you want to delete `color_red $1` `color_yellow "on remote"`?";
+  is_git_directory || return 1;
+  local branch_to_delete=$1;
+  [ $# == 0 ] && branch_to_delete=$(echo_current_branch);
+  branch_on_remote_exists $branch_to_delete && {
+    question "Do you want to delete `color_red $branch_to_delete` `color_yellow "on remote"`?";
     [ $? == 0 ] && { 
-      run_cmd "git push origin --delete $1";
-      run_cmd "git branch --unset-upstream $1";
+      run_cmd "git push origin --delete $branch_to_delete";
+      run_cmd "git branch --unset-upstream $branch_to_delete";
     }
   }
 }
