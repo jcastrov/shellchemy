@@ -14,7 +14,7 @@ Utility functions to run multiple commands at once.
     ```
 3. If you want to change the appearance of your shell prompt, add this line below the lines you added.
     ```
-    source ~/schellchemy/prompt"
+    source ~/schellchemy/prompt
     ```
 3. Restart your terminal.
 
