@@ -115,6 +115,6 @@ vsc() {
     type=`color_magenta "repository"`;
   }
   local directory="$(basename "`cd "$vsc_path"; pwd`")";
-  print_info "Opening `color_magenta "$directory"` $type on VSCode.";
+  print_info "Opening `color_cyan "$directory"` $type on VSCode.";
   run_cmd "code \"$vsc_path\"";
 }
