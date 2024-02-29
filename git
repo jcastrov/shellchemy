@@ -92,19 +92,6 @@ gitof() {
 gitpl() { run_cmd "git pull"; }
 gitplr() { run_cmd "git pull -r"; }
 
-# Searches for pull requests on the repo URL, where the source branch is the
-# current branch. If #1 is specified, $1 will be the search text.
-#     $1 (Optional): Search text
-gitprf() {
-  is_git_directory || return 1;
-  local search_text=$1;
-  [ -z "$1" ] && { 
-    get_current_branch current_branch;
-    search_text="head:$current_branch";
-  }
-  run_cmd "open `get_repo_url`/pulls?q=$search_text"
-}
-
 # Pushes a branch
 gitps() { 
   run_cmd "git push $@";
