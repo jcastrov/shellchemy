@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
 prompt_command() {
-  local ps1_path=$(echo "%~");
+  local ps1_path=$(color_black "$(bg_white "$(echo "%~")")");
   local git_root=$(git rev-parse --show-toplevel 2>/dev/null);
   local branch=" ";
   if [[ -n $git_root ]]; then
-    local repository=$(color_blue `basename $git_root`);
-    ps1_path=$repository${PWD#"$git_root"};
+    local repository=$(color_black "$(bg_blue `basename $git_root`)");
+    local remaining_path=$(color_black "$(bg_white "${PWD#"$git_root"}")");
+    ps1_path="$repository$remaining_path";
     local current_branch=$(echo_current_branch);
     branch=" `color_green $current_branch` ";
     if [ "$(git status 2> /dev/null | tail -n1)" != "nothing to commit, working tree clean" ]; then
