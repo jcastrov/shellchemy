@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+zsh_prompt() {
+  local ps1_path=$(echo "%~");
+  local git_root=$(git rev-parse --show-toplevel 2>/dev/null);
+  local branch=" ";
+  if [[ -n $git_root ]]; then
+    local repository=$(color_blue `basename $git_root`);
+    ps1_path=$repository${PWD#"$git_root"};
+    local current_branch=" $(echo_current_branch) ";
+    branch=`color_green $current_branch`;
+    if [ "$(git status 2> /dev/null | tail -n1)" != "nothing to commit, working tree clean" ]; then
+      branch=`color_yellow $current_branch`;
+    fi
+  fi
+
+  PS1="$ps1_path$branch`color_magenta \$` ";
+}
+
+precmd() { zsh_prompt; }
