@@ -9,12 +9,9 @@ gita() {
 
 # Deletes a branch locally
 gitbD() {
+  local current_branch=$(echo_current_branch);
   local branch_to_delete=$1;
-  local current_branch="";
-  [ $# == 0 ] && { 
-    current_branch=$(echo_current_branch);
-    branch_to_delete=$current_branch;
-  }
+  [[ $# == 0 ]] && branch_to_delete=$current_branch;
   branch_locally_exists $branch_to_delete || return 1;
   question "Are you sure to force delete `color_red $branch_to_delete` locally?"
   [ $? != 0 ] && return 0;
