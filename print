@@ -52,8 +52,14 @@ print_cmd() {
 }
 
 question() {
-  # https://stackoverflow.com/a/3232082/1054579
-  read -r -p "`color_magenta ║q:` $1 [y/`color_cyan N`] " __response;
-  [[ "$__response" =~ ^([yY][eE][sS]|[yY])$ ]] && return 0;
+  local question_string="`color_magenta ▒` $1 [y/`color_cyan N`] ";
+  if [[ -n $ZSH_VERSION ]]; then
+    # https://askubuntu.com/a/1246583/652908
+    read "response?$question_string";
+  else
+    # https://stackoverflow.com/a/3232082/1054579
+    read -r -p "$question_string" response;
+  fi
+  [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]] && return 0;
   return 1;
 }
