@@ -120,10 +120,10 @@ gitps() {
     local target_branch="${current_branch%-*}";
 
     question "Do you want to create a Pull Request (head: $(color_cyan $current_branch). base: $(color_magenta $base_branch))?";
-    [ $? == 0 ] && { run_cmd "gitprc $base_branch"; }
+    [[ $? == 0 ]] && { run_cmd "gitprc $base_branch"; }
 
     question "Do you want to switch back to branch $(color_cyan $target_branch)?";
-    [ $? == 0 ] && { run_cmd "$git_switch $target_branch"; }
+    [[ $? == 0 ]] && { run_cmd "$git_switch $target_branch"; }
   fi
 }
 
@@ -135,7 +135,7 @@ gitpsd() {
   [ $# == 0 ] && branch_to_delete=$(echo_current_branch);
   branch_on_remote_exists $branch_to_delete && {
     question "Do you want to delete `color_red $branch_to_delete` `color_yellow "on remote"`?";
-    [ $? == 0 ] && { 
+    [[ $? == 0 ]] && { 
       run_cmd "git push origin --delete $branch_to_delete";
       run_cmd "git branch --unset-upstream $branch_to_delete";
     }
@@ -185,7 +185,7 @@ gitrsho() { run_cmd "git reset --hard origin/$1"; }
 gitrt() {
   [[ $1 != "." ]] && run_cmd "$git_restore $@" && return 0;
   __option "Are you sure to restore all your modified files?"
-  [ $? == 0 ] && __run "$git_restore_f";
+  [[ $? == 0 ]] && __run "$git_restore_f";
 }
 
 # Status commands
@@ -208,7 +208,7 @@ gitshu() { run_cmd "git stash --include-untracked \"$1\""; }
 #     $2 (Optional): Branch or SHA starting point
 gitsw() {
   has_parameters $@ || return 1;
-  [ "$1" == "-" ] && {
+  [[ "$1" == "-" ]] && {
     run_cmd "$git_switch -";
     return 0;
   }
@@ -223,7 +223,7 @@ gitsw() {
   branch_on_remote_exists $1 && {
     on_remote=true;
     question "Do you want to switch to `color_yellow $1` remote branch?";
-    [ $? == 0 ] && {
+    [[ $? == 0 ]] && {
       gitf;
       run_cmd "$git_switch $1";
       return 0;
@@ -234,7 +234,7 @@ gitsw() {
     ! branch_on_remote_exists ${2#"origin/"} && return 1;
   else
     question "Do you want to create `color_green $1` branch from local $(color_red $start_point)?";
-    [ $? == 0 ] && {
+    [[ $? == 0 ]] && {
       $on_remote && gitpsd $1;
       run_cmd "$git_switch_c $1 $start_point";
       return 0;
@@ -243,7 +243,7 @@ gitsw() {
   fi
 
   question "Do you want to create `color_green $1` branch from remote $(color_cyan $start_point)?";
-  [ $? == 0 ] && {
+  [[ $? == 0 ]] && {
     $on_remote && gitpsd $1;
     gitf;
     run_cmd "$git_switch_c $1 $start_point";
@@ -271,12 +271,12 @@ gitsync() {
   # Verify whether the new branch exists or needs to be recreated.
   if branch_on_remote_exists $new_branch && branch_locally_exists $new_branch; then
     question "Do you want to update the current `color_cyan $new_branch` branch?";
-    [ $? == 0 ] && { switch_cmd="$git_switch $new_branch"; }
+    [[ $? == 0 ]] && { switch_cmd="$git_switch $new_branch"; }
   fi
   run_cmd "$switch_cmd";
 
   question "Do you want to merge `color_cyan $new_branch` branch with the main branch using \"ours\" strategy?";
-  [ $? == 0 ] && {
+  [[ $? == 0 ]] && {
     get_main_branch "main_branch";
     gitmo $main_branch "-s ours"; 
     if [[ $current_branch == $main_branch ]]; then
