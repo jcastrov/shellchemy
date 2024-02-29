@@ -43,6 +43,7 @@ __prepate_branches() {
   # fi
 
   item() { echo "\n   `color_cyan $1:` ${!1}"; }
+  [ ${ZSH_VERSION} ] && item() { echo "\n   `color_cyan $1:` ${(P)1}"; }
   print_info "Pull Request details: `item base``item head``item title``item description`";
   question "Do you want to continue?";
   if [[ $? == 0 ]]; then
