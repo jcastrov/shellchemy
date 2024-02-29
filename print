@@ -40,10 +40,10 @@ bg_gray() { printf "`__c "$1" 7 setab`"; }
   color_gray() { print -P "%F{white}${1}%f"; }
 }
 
-print_error() { printf "`color_red "║e:"` $@\n"; }
-print_info() { printf "`color_blue "║i:"` $@\n"; }
-print_ok() { printf "`color_green "║k:"` $@\n"; }
-print_warning() { printf "`color_yellow "║w:"` $@\n"; }
+print_error() { printf "`color_red "▒"` $@\n"; }
+print_info() { printf "`color_blue "▒"` $@\n"; }
+print_ok() { printf "`color_green "▒"` $@\n"; }
+print_warning() { printf "`color_yellow "▒"` $@\n"; }
 
 # Prints a string with a light black foreground.
 print_cmd() { 
