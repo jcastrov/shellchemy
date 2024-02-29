@@ -12,6 +12,10 @@ Utility functions to run multiple commands at once.
     BP_JIRA_ORGANIZATION='myorganization'
     source ~/bash_scripts/index
     ```
+3. If you want to change the appearance of your shell prompt, add this line below the lines you added.
+    ```
+    source ~/bash_scripts/prompt"
+    ```
 3. Restart your terminal.
 
 ## Common issues
