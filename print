@@ -30,14 +30,14 @@ bg_cyan() { printf "`__c "$1" 6 setab`"; }
 bg_gray() { printf "`__c "$1" 7 setab`"; }
 
 [ ${ZSH_VERSION} ] && {
-  color_black() { printf "%s" "%F{black}${1}%f"; }
-  color_red() { printf "%s" "%F{red}${1}%f"; }
-  color_green() { printf "%s" "%F{green}${1}%f"; }
-  color_yellow() { printf "%s" "%F{yellow}${1}%f"; }
-  color_blue() { printf "%s" "%F{blue}${1}%f"; }
-  color_magenta() { printf "%s" "%F{magenta}${1}%f"; }
-  color_cyan() { printf "%s" "%F{cyan}${1}%f"; }
-  color_gray() { printf "%s" "%F{white}${1}%f"; }
+  color_black() { print -P "%F{black}${1}%f"; }
+  color_red() { print -P "%F{red}${1}%f"; }
+  color_green() { print -P "%F{green}${1}%f"; }
+  color_yellow() { print -P "%F{yellow}${1}%f"; }
+  color_blue() { print -P "%F{blue}${1}%f"; }
+  color_magenta() { print -P "%F{magenta}${1}%f"; }
+  color_cyan() { print -P "%F{cyan}${1}%f"; }
+  color_gray() { print -P "%F{white}${1}%f"; }
 }
 
 print_error() { printf "`color_red "║e:"` $@\n"; }
