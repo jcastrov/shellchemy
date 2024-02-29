@@ -3,6 +3,23 @@
 # Colors a string ($1) with a number ($2)
 __c() { printf "%s" "$(tput $3 ${2:-7})${1}$(tput sgr0)"; }
 
+prompt_fg_black() { echo "\[$(tput setaf 0)\]${1}\[$(tput sgr0)\]"; }
+prompt_fg_red() { echo "\[$(tput setaf 1)\]${1}\[$(tput sgr0)\]"; }
+prompt_fg_green() { echo "\[$(tput setaf 2)\]${1}\[$(tput sgr0)\]"; }
+prompt_fg_yellow() { echo "\[$(tput setaf 3)\]${1}\[$(tput sgr0)\]"; }
+prompt_fg_blue() { echo "\[$(tput setaf 4)\]${1}\[$(tput sgr0)\]"; }
+prompt_fg_magenta() { echo "\[$(tput setaf 5)\]${1}\[$(tput sgr0)\]"; }
+prompt_fg_cyan() { echo "\[$(tput setaf 6)\]${1}\[$(tput sgr0)\]"; }
+prompt_fg_gray() { echo "\[$(tput setaf 7)\]${1}\[$(tput sgr0)\]"; }
+prompt_bg_black() { echo "\[$(tput setaf 0)\]${1}\[$(tput sgr0)\]"; }
+prompt_bg_red() { echo "\[$(tput setab 1)\]${1}\[$(tput sgr0)\]"; }
+prompt_bg_green() { echo "\[$(tput setab 2)\]${1}\[$(tput sgr0)\]"; }
+prompt_bg_yellow() { echo "\[$(tput setab 3)\]${1}\[$(tput sgr0)\]"; }
+prompt_bg_blue() { echo "\[$(tput setab 4)\]${1}\[$(tput sgr0)\]"; }
+prompt_bg_magenta() { echo "\[$(tput setab 5)\]${1}\[$(tput sgr0)\]"; }
+prompt_bg_cyan() { echo "\[$(tput setab 6)\]${1}\[$(tput sgr0)\]"; }
+prompt_bg_white() { echo "\[$(tput setab 7)\]${1}\[$(tput sgr0)\]"; }
+
 color_black() { printf "`__c "$1" 0 setaf`"; }
 color_red() { printf "`__c "$1" 1 setaf`"; }
 color_green() { printf "`__c "$1" 2 setaf`"; }
@@ -44,10 +61,28 @@ print_cmd() {
   bg_green() { echo "%K{green}${1}%k"; }
   bg_yellow() { echo "%K{yellow}${1}%k"; }
   bg_blue() { echo "%K{blue}${1}%k"; }
-  bg_magenta() { echo "%K{maegenta}${1}%k"; }
+  bg_magenta() { echo "%K{magenta}${1}%k"; }
   bg_cyan() { echo "%K{cyan}${1}%k"; }
   bg_white() { echo "%K{white}${1}%k"; }
   underline() { echo "%U${1}%u"; }
+
+  prompt_fg_black() { color_black $@; }
+  prompt_fg_red() { color_red $@; }
+  prompt_fg_green() { color_green $@; }
+  prompt_fg_yellow() { color_yellow $@; }
+  prompt_fg_blue() { color_blue $@; }
+  prompt_fg_magenta() { color_magenta $@; }
+  prompt_fg_cyan() { color_cyan $@; }
+  prompt_fg_gray() { color_gray $@; }
+  prompt_bg_black() { bg_black $@; }
+  prompt_bg_red() { bg_red $@; }
+  prompt_bg_green() { bg_green $@; }
+  prompt_bg_yellow() { bg_yellow $@; }
+  prompt_bg_blue() { bg_blue $@; }
+  prompt_bg_magenta() { bg_magenta $@; }
+  prompt_bg_cyan() { bg_cyan $@; }
+  prompt_bg_white() { bg_white $@; }
+
 
   print_error() { print -P "`color_red "▒"` $@"; }
   print_info() { print -P "`color_blue "▒"` $@"; }
