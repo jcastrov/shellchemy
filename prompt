@@ -1,20 +1,23 @@
 #!/usr/bin/env bash
 
+__get_ps1_current_path() { echo "%~"; }
+[ ${BASH_VERSION} ] && __get_ps1_current_path() { echo "\w"; }
+
 prompt_command() {
-  local ps1_path=$(color_black "$(bg_white "$(echo "%~")")");
+  local ps1_path=$(prompt_fg_black "$(bg_white "$(__get_ps1_current_path)")");
   local git_root=$(git rev-parse --show-toplevel 2>/dev/null);
   local branch=" ";
   if [[ -n $git_root ]]; then
-    local repository=$(color_black "$(bg_blue `basename $git_root`)");
-    local remaining_path=$(color_black "$(bg_white "${PWD#"$git_root"}")");
+    local repository=$(prompt_fg_black "$(prompt_bg_blue `basename $git_root`)");
+    local remaining_path=$(prompt_fg_black "$(bg_white "${PWD#"$git_root"}")");
     ps1_path="$repository$remaining_path";
     local current_branch=$(echo_current_branch);
-    branch=" `color_green $current_branch` ";
+    branch=" `prompt_fg_green $current_branch` ";
     if [ "$(git status 2> /dev/null | tail -n1)" != "nothing to commit, working tree clean" ]; then
-      branch=" `color_yellow $current_branch` ";
+      branch=" `prompt_fg_yellow $current_branch` ";
     fi
   fi
-  PS1="$ps1_path$branch`color_magenta \$` ";
+  PS1="$ps1_path$branch`prompt_fg_magenta \$` ";
 }
 
 [ ${BASH_VERSION} ] && PROMPT_COMMAND=prompt_command;
