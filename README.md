@@ -1,4 +1,4 @@
-# bash-scripts
+# Schellchemy
 
 Utility functions to run multiple commands at once. 
 
@@ -10,11 +10,11 @@ Utility functions to run multiple commands at once.
 2. On your `~/.bashrc`, or `~/.zprofile` files, add the following lines (Let's assume you cloned this repository in your $HOME directory):
     ```
     BP_JIRA_ORGANIZATION='myorganization'
-    source ~/bash_scripts/index
+    source ~/schellchemy/index
     ```
 3. If you want to change the appearance of your shell prompt, add this line below the lines you added.
     ```
-    source ~/bash_scripts/prompt"
+    source ~/schellchemy/prompt"
     ```
 3. Restart your terminal.
 
