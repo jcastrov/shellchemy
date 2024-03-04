@@ -172,7 +172,7 @@ gitrsho() { run_cmd "git reset --hard origin/$1"; }
 gitrt() {
   [[ $1 != "." ]] && run_cmd "$git_restore $@" && return 0;
   __option "Are you sure to restore all your modified files?"
-  [[ $? == 0 ]] && __run "$git_restore_f";
+  [[ $? == 0 ]] && run_cmd "$git_restore_f";
 }
 
 # Status commands
