@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # Scripts path depends on the current shell.
-bash_scripts_path=$(dirname "${BASH_SOURCE[0]}");
-if [[ -n $ZSH_VERSION ]]; then bash_scripts_path=${0:A:h}; fi
+shellchemy_path=$(dirname "${BASH_SOURCE[0]}");
+if [[ -n $ZSH_VERSION ]]; then shellchemy_path=${0:A:h}; fi
 
 echo_regex_substring() {
   local substring=$(echo "$1" | grep -oE "$2");
@@ -10,15 +10,16 @@ echo_regex_substring() {
   echo "$substring";
 }
 
-source "$bash_scripts_path/print"
-source "$bash_scripts_path/git_utils"
-source "$bash_scripts_path/git"
-source "$bash_scripts_path/github"
-source "$bash_scripts_path/windows"
+source "$shellchemy_path/print"
+source "$shellchemy_path/git_utils"
+source "$shellchemy_path/git"
+source "$shellchemy_path/github"
+source "$shellchemy_path/shellchemy"
+source "$shellchemy_path/windows"
 
 br() {
   print_info "Applying new changes";
-  run_cmd ". $bash_scripts_path/index";
+  run_cmd ". $shellchemy_path/index";
 }
 
 # Checks if a command is avaiable in your current session. Returns 0 if

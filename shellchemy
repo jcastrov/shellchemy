@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+shellchemy() {
+  if [[ -z $1 || $1 == "help" ]]; then
+    local s1="usage: shellchemy [cd] [restart] [update] [vsc]";
+    local s2="    `color_cyan cd`       Change directory to shellchemy";
+    local s3="    `color_cyan help`     Show shellchemy available commands";
+    local s4="    `color_cyan restart`  Apply changes made to files under shellchemy directory";
+    local s5="    `color_cyan update`   Pull new changes and restart shellchemy";
+    local s6="    `color_cyan vsc`      Open shellchemy directory in Visual Studio Code and change directory";
+    print_info "$s1\n$s2\n$s3\n$s4\n$s5\n$s6";
+  elif [[ $1 == "cd" ]]; then
+    __shellchemy_cd;
+  elif [[ $1 == "restart" ]]; then
+    __shellchemy_restart;
+  elif [[ $1 == "update" ]]; then
+    print_info "Updating shellchemy...";
+    local current_path=$PWD;
+    __shellchemy_cd && run_cmd "$git_switch main" && gitpl && __shellchemy_restart;
+    run_cmd "cd $current_path";
+  elif [[ $1 == "vsc" ]]; then
+    vsc "$shellchemy_path";
+    __shellchemy_cd;
+  else
+    print_error "`color_red $1` is not a shellchemy command. See `color_cyan "shellchemy help"`."
+  fi
+}
+
+__shellchemy_cd() { run_cmd "cd $shellchemy_path"; }
+__shellchemy_restart() { 
+  print_info "Restarting shellchemy...";
+  run_cmd ". $shellchemy_path/index";
+}
