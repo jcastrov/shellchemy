@@ -47,6 +47,8 @@ alias cdrepo1="cdnvm /Users/myuser/myorganization/repo1 10.13";
 alias cdrepo2="cdnvm /Users/myuser/myorganization/repo2 16";
 ```
 
+<br>
+
 ## Common issues
 ### command not found: ^M
 Perhaps you clonned the repository with `autocrlf` enabled. You can disabled it in your `~/.gitconfig` file or run
