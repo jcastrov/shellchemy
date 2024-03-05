@@ -14,6 +14,7 @@ Utility functions to run multiple commands at once for Z Shell and Bash.
     ```
 4. Open a new terminal to apply your changes.
 
+
 ## Additional features
 ### Prompt theme
 Add the following line to execute the theme **after** the the line executing shellchemy.
@@ -31,6 +32,7 @@ If you lack permissions to add `.nvmrc` files and need to work with different ve
 alias cdrepo1="cdnvm /Users/myuser/myorganization/repo1 10.13";
 alias cdrepo2="cdnvm /Users/myuser/myorganization/repo2 16";
 ```
+
 
 ## Shell configuration file example
 Assuming you install shellchemy with all the additional features, your shell configuration file should look something like this:
