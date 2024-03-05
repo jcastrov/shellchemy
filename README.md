@@ -14,6 +14,7 @@ Utility functions to run multiple commands at once for Z Shell and Bash.
     ```
 4. Open a new terminal to apply your changes.
 
+<br>
 
 ## Additional features
 ### Prompt theme
@@ -33,6 +34,7 @@ alias cdrepo1="cdnvm /Users/myuser/myorganization/repo1 10.13";
 alias cdrepo2="cdnvm /Users/myuser/myorganization/repo2 16";
 ```
 
+<br>
 
 ## Shell configuration file example
 Assuming you install shellchemy with all the additional features, your shell configuration file should look something like this:
