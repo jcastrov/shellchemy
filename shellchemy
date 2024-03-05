@@ -26,7 +26,10 @@ shellchemy() {
   fi
 }
 
-__shellchemy_cd() { run_cmd "cd $shellchemy_path"; }
+__shellchemy_cd() {
+  print_info "Changing directory to `color_cyan shellchemy`...";
+  run_cmd "cd $shellchemy_path";
+}
 __shellchemy_restart() { 
   print_info "Restarting shellchemy...";
   run_cmd ". $shellchemy_path/index";
