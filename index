@@ -22,6 +22,15 @@ br() {
   run_cmd ". $shellchemy_path/index";
 }
 
+cdnvm() {
+  run_cmd "cd "$1"";
+  envm;
+  [[ $(node --version) != "v$2"* ]] && {
+    print_info "Changing node version to `color_cyan $2`"
+    run_cmd "nvm use $2";
+  }
+}
+
 # Checks if a command is avaiable in your current session. Returns 0 if
 # the command exists. Otherwise, shows an error message and returns 1 if 
 # the command doesn't exist.
