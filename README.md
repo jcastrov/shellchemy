@@ -20,7 +20,7 @@ Utility functions to run multiple commands at once for Z Shell and Bash.
 ### Prompt theme
 Add the following line to execute the theme **after** the the line executing shellchemy.
 ```
-source /Users/myuser/shellchemy/shellchemy
+source /Users/myuser/shellchemy/prompt
 ```
 ### Jira
 Add the line with the organization name variable **before** the line executing shellchemy. If the Jira URL is `https://myorganization.atlassian.net/`, then the value should be `'myorganization'`.
@@ -41,7 +41,7 @@ Assuming you install shellchemy with all the additional features, your shell con
 ```
 BP_JIRA_ORGANIZATION='myorganization'
 source /Users/myuser/shellchemy/index
-source /Users/myuser/shellchemy/shellchemy
+source /Users/myuser/shellchemy/prompt
 
 alias cdrepo1="cdnvm /Users/myuser/myorganization/repo1 10.13";
 alias cdrepo2="cdnvm /Users/myuser/myorganization/repo2 16";
