@@ -8,9 +8,15 @@ prompt_command() {
   local git_root=$(git rev-parse --show-toplevel 2>/dev/null);
   local branch=" ";
   if [[ -n $git_root ]]; then
-    local repository=$(prompt_fg_black "$(prompt_bg_blue " `basename $git_root` ")");
-    local remaining_path=$(prompt_fg_black "$(bg_white "${PWD#"$git_root"}")");
-    ps1_path="$repository$remaining_path";
+    local repository="$(prompt_fg_black "`basename $git_root`")";
+    local remaining_path=${PWD#"$git_root"};
+    if [[ -z $remaining_path ]]; then 
+      ps1_path="$(prompt_bg_blue " $repository ")"; 
+    else
+      local remaining_path_color=$(prompt_bg_white "$(prompt_fg_black "$remaining_path") ");
+      ps1_path="$(prompt_bg_blue " $repository")$remaining_path_color";
+    fi
+
     local current_branch=$(echo_current_branch);
     branch=" `prompt_fg_green $current_branch` ";
     if [ "$(git status 2> /dev/null | tail -n1)" != "nothing to commit, working tree clean" ]; then
