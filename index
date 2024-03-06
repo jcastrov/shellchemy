@@ -11,8 +11,8 @@ echo_regex_substring() {
 }
 
 source "$shellchemy_path/print"
-source "$shellchemy_path/git_utils"
-source "$shellchemy_path/git"
+source "$shellchemy_path/git/utils"
+source "$shellchemy_path/git/git"
 source "$shellchemy_path/github"
 source "$shellchemy_path/jira"
 source "$shellchemy_path/shellchemy"
