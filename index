@@ -14,6 +14,7 @@ source "$shellchemy_path/print"
 source "$shellchemy_path/git_utils"
 source "$shellchemy_path/git"
 source "$shellchemy_path/github"
+source "$shellchemy_path/jira"
 source "$shellchemy_path/shellchemy"
 source "$shellchemy_path/windows"
 
@@ -72,10 +73,6 @@ epython() {
   run_cmd "python --version";
 }
 
-echo_jira_ticket_url() {
-  echo "https://$BP_JIRA_ORGANIZATION.atlassian.net/browse/$1";
-}
-
 # Checks if a function has parameters. Returns 0 if there are paramters. 
 # Otherwise returns 1.
 #     $@: Parameters
@@ -87,18 +84,9 @@ has_parameters() {
   return 0;
 }
 
-jira() {
-  local branch=$1;
-  [ -z "$1" ] && { 
-    ! is_git_directory && return 1;
-    branch=$(echo_current_branch);
-  }
-  local ticket_name=$(echo_regex_substring $branch "^[[:alpha:]]+-[[:digit:]]+");
-  if [[ -z $ticket_name ]]; then
-    print_error "Branch `color_yellow $branch` is not a valid ticket name.";
-    return 1;
-  fi
-  run_cmd "open $(echo_jira_ticket_url $ticket_name)";
+hide_output() {
+  "$@" > /dev/null 2>&1;
+  return $?;
 }
 
 # Prints and runs a command ($1).
