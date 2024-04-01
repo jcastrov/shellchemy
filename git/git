@@ -107,7 +107,7 @@ gitps() {
     local target_branch="${current_branch%-*}";
 
     question "Do you want to create a Pull Request (head: $(color_cyan $current_branch). base: $(color_magenta $base_branch))?";
-    [[ $? == 0 ]] && { run_cmd "gitprc $base_branch"; }
+    [[ $? == 0 ]] && { run_cmd "ghprc $base_branch"; }
 
     question "Do you want to switch back to branch $(color_cyan $target_branch)?";
     [[ $? == 0 ]] && { run_cmd "$git_switch $target_branch"; }
