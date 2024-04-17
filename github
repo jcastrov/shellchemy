@@ -48,7 +48,7 @@ __prepate_branches() {
   question "Do you want to continue?";
   if [[ $? == 0 ]]; then
     print_info "Creating Pull Request on GitHub";
-    run_cmd "gh pr create --base $base --head $head --title \"$title\" --body \"$description\""; # --draft
+    run_cmd "gh pr create --base $base --head $head --title \"$title\" --body \"$description\" --draft";
   fi
 }
 
