@@ -187,6 +187,7 @@ gitsh() { run_cmd "git stash $@"; }
 gitsha() { run_cmd "git stash apply"; }
 gitshas() { run_cmd "git stash apply stash@{\"$1\"}"; }
 gitshcl() { run_cmd "git stash clear"; }
+gitshiu() { run_cmd "git stash --include-untracked"; }
 gitshl() { run_cmd "git stash list"; }
 gitshp() { run_cmd "git stash pop"; }
 gitshps() { run_cmd "git stash save \"$1\""; }
