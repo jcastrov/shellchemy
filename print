@@ -88,7 +88,7 @@ print_cmd() {
   print_info() { print -P "`color_blue "▒"` $@"; }
   print_ok() { print -P "`color_green "▒"` $@"; }
   print_warning() { print -P "`color_yellow "▒"` $@"; }
-  print_cmd() { print -P `color_gray "▒ $ $(echo "$@" | awk '$1=$1')"`; }
+  print_cmd() { print -P `color_gray "  $ $(echo "$@" | awk '$1=$1')"`; }
 }
 
 
