@@ -246,19 +246,27 @@ gitswC() { run_cmd "git switch -C $@"; }
 
 gitsync() {
   local current_branch=$(echo_current_branch);
+  local target_branch=$1;
 
   # Sync should not be done from qa or develop branches.
   if [[ $current_branch == "qa" || $current_branch == "develop" || $current_branch == "dev" ]]; then
     print_error "Current branch cannot be `color_cyan $current_branch`"; return 1;
   fi
 
-  # If branch on remote doesn't exist, stop execution. Otherwise fetch remote branches.
-  ! branch_on_remote_exists $1 && return 1;
+  # Get the latest Release branch if the parameter is "Release"
+  if [[ $1 == "Release" ]]; then
+    get_latest_release_branch "target_branch";
+  fi
+
+  # If branch on remote doesn't exist, stop execution. 
+  ! branch_on_remote_exists $target_branch && return 1;
+
+  # Fetch remote branches.
   gitf;
 
-  local new_branch=${current_branch}-$1;
-
-  local switch_cmd="$git_switch_c $new_branch origin/$1";
+  local new_branch=${current_branch}-${target_branch};
+  local switch_cmd="$git_switch_c $new_branch origin/$target_branch";
+  
   # Verify whether the new branch exists or needs to be recreated.
   if branch_on_remote_exists $new_branch && branch_locally_exists $new_branch; then
     question "Do you want to update the current `color_cyan $new_branch` branch?";
