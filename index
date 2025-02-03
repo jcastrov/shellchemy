@@ -131,7 +131,7 @@ hide_output() {
 # Prints and runs a command ($1).
 # (Optional) Assigns the output to a variable name without "$" ($2)
 run_cmd() {
-  print_cmd "$1";
+  print_cmd "$@";
   if [[ $# == 1 ]]; then
     # "eval" runs commands with pipes: https://stackoverflow.com/a/48098280/1054579
     eval $1;

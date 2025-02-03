@@ -49,7 +49,7 @@ gitca() { gitc "$1" "--amend"; }
 gitchk() { run_cmd "git checkout $@"; }
 
 # Cherry pick commands
-gitchp() { run_cmd "git cherry-pick $1"; }
+gitchp() { run_cmd "git cherry-pick "$@""; }
 gitchpa() { run_cmd "git cherry-pick --abort"; }
 gitchpc() { run_cmd "git cherry-pick --continue"; }
 
