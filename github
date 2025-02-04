@@ -36,7 +36,8 @@ __prepate_branches() {
   fi
 
   local description="";
-  hide_output validate_jira_branch $head && description=$(echo_jira_ticket_url $head);
+  # hide_output validate_jira_branch $head && description=$(echo_jira_ticket_url $head);
+
   local title="[$base_original_name] $head";
   # if [[ -n $2 ]]; then
   #   title="$title: $2";
