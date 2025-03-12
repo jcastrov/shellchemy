@@ -35,9 +35,6 @@ __prepate_branches() {
     return 0;
   fi
 
-  local description="";
-  # hide_output validate_jira_branch $head && description=$(echo_jira_ticket_url $head);
-
   local title="[$base_original_name] $head";
   # if [[ -n $2 ]]; then
   #   title="$title: $2";
@@ -45,11 +42,11 @@ __prepate_branches() {
 
   item() { echo "\n   `color_cyan $1:` ${!1}"; }
   [ ${ZSH_VERSION} ] && item() { echo "\n   `color_cyan $1:` ${(P)1}"; }
-  print_info "Pull Request details: `item base``item head``item title``item description`";
+  print_info "Pull Request details: `item base``item head``item title`";
   question "Do you want to continue?";
   if [[ $? == 0 ]]; then
     print_info "Creating Pull Request on GitHub";
-    run_cmd "gh pr create --base $base --head $head --title \"$title\" --body \"$description\" --draft";
+    run_cmd "gh pr create --base $base --head $head --title \"$title\" --draft";
   fi
 }
 
