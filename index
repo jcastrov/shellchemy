@@ -47,8 +47,13 @@ source "$shellchemy_path/windows"
 
 cdnvm() {
   run_cmd "cd "$1"";
-  envm;
-  if [[ $(node --version) != "v$2"* ]]; then
+  
+  if ! is_nvm_enabled; then
+    question "Do you want to enable NVM?";
+    [[ $? == 0 ]] && enable_nvm || { return 1; }
+  fi
+ 
+  if is_nvm_enabled && [[ $(node --version) != "v$2"* ]]; then
     print_info "Changing node version to `color_cyan $2`"
     run_cmd "nvm use $2";
   fi
@@ -77,9 +82,19 @@ ebrew() {
   run_cmd "brew --version";
 }
 
+is_nvm_enabled() {
+  cmd_exists nvm > /dev/null 2>&1 && return 0;
+  return 1;
+}
+
+ensure_nvm_is_enabled() {
+  if ! is_nvm_enabled; then
+    enable_nvm;
+  fi
+}
+
 # Enables NVM on the current terminal session.
-envm() {
-  cmd_exists nvm > /dev/null 2>&1 && return 1;
+enable_nvm() {
   ebrew;
   print_info "Enabling `color_cyan nvm`...";
   
