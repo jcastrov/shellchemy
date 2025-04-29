@@ -98,8 +98,8 @@ gitps() {
   [ $? != 0 ] && { return $?; }
   local current_branch=$(echo_current_branch);
 
-  # If the branch ends with "-develop" or "-qa"
-  if [[ $current_branch =~ -(develop|qa)$ ]]; then
+  # If the branch ends with "-develop", "-qa" or "-staging"
+  if [[ $current_branch =~ -(develop|qa|staging)$ ]]; then
     ##*- Remove the branch name. ABC-123-qa -> qa
     local base_branch="${current_branch##*-}";
   
@@ -248,8 +248,8 @@ gitsync() {
   local current_branch=$(echo_current_branch);
   local target_branch=$1;
 
-  # Sync should not be done from qa or develop branches.
-  if [[ $current_branch == "qa" || $current_branch == "develop" || $current_branch == "dev" ]]; then
+  # Sync should not be done from qa, develop or staging branches.
+  if [[ $current_branch =~ ^(qa|develop|dev|staging)$ ]]; then
     print_error "Current branch cannot be `color_cyan $current_branch`"; return 1;
   fi
 
