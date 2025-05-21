@@ -99,7 +99,7 @@ gitps() {
   local current_branch=$(echo_current_branch);
 
   # If the branch ends with "-develop", "-qa" or "-staging"
-  if [[ $current_branch =~ -(develop|qa|staging)$ ]]; then
+  if [[ $current_branch =~ -(develop|dev|qa|staging)$ ]]; then
     ##*- Remove the branch name. ABC-123-qa -> qa
     local base_branch="${current_branch##*-}";
   
@@ -251,6 +251,20 @@ gitsync() {
   # Sync should not be done from qa, develop or staging branches.
   if [[ $current_branch =~ ^(qa|develop|dev|staging)$ ]]; then
     print_error "Current branch cannot be `color_cyan $current_branch`"; return 1;
+  fi
+
+  # If the current branch ends with -qa, -develop or -staging, asks if they want to continue.
+  if [[ $current_branch =~ -(qa|develop|dev|staging)$ ]]; then
+    question "Looks like you are in a sync branch. Do you want to continue with `color_cyan $current_branch` branch?";
+
+    # If the user doesn't want to continue, asks if they want to continue from the branch without the suffix.
+    [[ $? != 0 ]] && {
+      question "Do you want to continue from `color_cyan ${current_branch%-*}` branch instead?";
+      [[ $? != 0 ]] && return 1;
+
+      # Remove the suffix.
+      current_branch="${current_branch%-*}";
+    }
   fi
 
   # Get the latest Release branch if the parameter is "Release"
