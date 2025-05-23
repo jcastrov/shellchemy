@@ -123,17 +123,17 @@ gitpsd() {
   branch_on_remote_exists $branch_to_delete && {
     question "Do you want to delete `color_red $branch_to_delete` `color_yellow "on remote"`?";
     [[ $? == 0 ]] && { 
-      run_cmd "git push origin --delete $branch_to_delete";
+      run_cmd "git push origin --delete $branch_to_delete $@";
       run_cmd "git branch --unset-upstream $branch_to_delete";
     }
   }
 }
 
 # Pushes a branch forcefully
-gitpsf() { gitps "--force-with-lease"; }
+gitpsf() { gitps "--force-with-lease $@"; }
 
 # Pushes a branch forcefully fixing the upstream
-gitpsfu() { gitpsu "--force-with-lease"; }
+gitpsfu() { gitpsu "--force-with-lease $@"; }
 
 # Renames the current branch locally and on remote.
 #     $1: New branch name
@@ -143,9 +143,9 @@ gitpsm() {
   branch_on_remote_exists $current_branch || return 1;
   question "Are you sure to change the name from `color_red $current_branch` to `color_green $1`?"
   [ $? != 0 ] && return 0;
-  run_cmd "git branch -m $1" &&
-  run_cmd "git push origin :$current_branch $1" &&
-  run_cmd "git push origin --set-upstream $1";
+  run_cmd "git branch -m $@" &&
+  run_cmd "git push origin :$current_branch $@" &&
+  run_cmd "git push origin --set-upstream $@";
 }
 
 # Pushes a branch for the first time
