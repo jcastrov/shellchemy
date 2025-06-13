@@ -14,7 +14,7 @@ prompt_command() {
       ps1_path="$(prompt_bg_blue " $repository ")"; 
     else
       local remaining_path_color=$(prompt_bg_white "$(prompt_fg_black "$remaining_path ")");
-      ps1_path="$(prompt_bg_blue " $repository")$remaining_path_color";
+      ps1_path="$(prompt_bg_blue " $repository ")$(prompt_bg_white " $remaining_path_color")";
     fi
 
     local current_branch=$(echo_current_branch);
