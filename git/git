@@ -3,9 +3,10 @@
 # Adds files and shows a quick status
 gita() {
   has_parameters $@ || return 1;
-  run_cmd "git add $1";
+  run_cmd "git add $@";
   run_cmd "git status -s"
 }
+gitaf() { gita "--force $@"; }
 
 # Deletes a branch locally
 gitbD() {
