@@ -14,7 +14,7 @@ gitbD() {
   local branch_to_delete=$1;
   [[ $# == 0 ]] && branch_to_delete=$current_branch;
   branch_locally_exists $branch_to_delete || return 1;
-  question "Are you sure to force delete `color_red $branch_to_delete` locally?"
+  question "Are you sure to force delete `color_red $branch_to_delete` branch locally?"
   [ $? != 0 ] && return 0;
 
   if [[ $current_branch == $branch_to_delete ]]; then
@@ -22,7 +22,7 @@ gitbD() {
     print_info "Switching to `color_cyan $main_branch` branch";
     run_cmd "$git_switch $main_branch";
   fi
-  print_ok "Deleting branch `color_red $branch_to_delete`..."
+  print_ok "Deleting branch `color_red $branch_to_delete` branch..."
   run_cmd "git branch -D $branch_to_delete";
 }
 
@@ -71,7 +71,11 @@ gitma() {
   if [[ $current_branch =~ -(qa|develop|dev|staging)$ ]]; then
     local original_branch="${current_branch%-*}";
     question "Do you want to switch back to $(color_cyan $original_branch) branch?";
-    [[ $? == 0 ]] && { run_cmd "$git_switch $original_branch"; }
+    [[ $? == 0 ]] && { 
+      run_cmd "$git_switch $original_branch";
+      question "Do you want to delete `color_red $branch_to_delete` branch locally?"
+      [[ $? == 0 ]] && { run_cmd "git branch -d $current_branch";  }
+    }
   fi
 }
 
