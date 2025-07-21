@@ -70,7 +70,7 @@ gitma() {
   local current_branch=$(echo_current_branch);
   if [[ $current_branch =~ -(qa|develop|dev|staging)$ ]]; then
     local original_branch="${current_branch%-*}";
-    question "Do you want to switch back to branch $(color_cyan $original_branch)?";
+    question "Do you want to switch back to $(color_cyan $original_branch) branch?";
     [[ $? == 0 ]] && { run_cmd "$git_switch $original_branch"; }
   fi
 }
@@ -122,7 +122,7 @@ gitps() {
     question "Do you want to create a Pull Request (head: $(color_cyan $current_branch). base: $(color_magenta $base_branch))?";
     [[ $? == 0 ]] && { run_cmd "ghprc $base_branch"; }
 
-    question "Do you want to switch back to branch $(color_cyan $target_branch)?";
+    question "Do you want to switch back to $(color_cyan $target_branch) branch?";
     [[ $? == 0 ]] && { run_cmd "$git_switch $target_branch"; }
   fi
 }
