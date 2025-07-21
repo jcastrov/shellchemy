@@ -131,9 +131,11 @@ gitpsd() {
 
 # Pushes a branch forcefully
 gitpsf() { gitps "--force-with-lease $@"; }
+gitpsfnv() { gitpsf "--no-verify $@"; }
 
 # Pushes a branch forcefully fixing the upstream
 gitpsfu() { gitpsu "--force-with-lease $@"; }
+gitpsfunv() { gitpsfu "--no-verify $@"; }
 
 # Renames the current branch locally and on remote.
 #     $1: New branch name
@@ -148,8 +150,11 @@ gitpsm() {
   run_cmd "git push origin --set-upstream $@";
 }
 
+gitpsnv() { gitps "--no-verify $@"; }
+
 # Pushes a branch for the first time
 gitpsu() { gitps "--set-upstream origin $(echo_current_branch) $@"; }
+gitpsunv() { gitpsu "--no-verify $@"; }
 
 # Rebase commands
 gitrb() { run_cmd "git rebase $@"; }
