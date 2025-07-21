@@ -62,7 +62,19 @@ gitf() {
 
 # Merge commands
 gitm() { run_cmd "git merge $1"; }
-gitma() { run_cmd "git merge --abort"; }
+
+gitma() {
+  run_cmd "git merge --abort";
+  # If the current branch ends with -qa, -develop or -staging,
+  # ask if they want to switch back to the original branch.
+  local current_branch=$(echo_current_branch);
+  if [[ $current_branch =~ -(qa|develop|dev|staging)$ ]]; then
+    local original_branch="${current_branch%-*}";
+    question "Do you want to switch back to branch $(color_cyan $original_branch)?";
+    [[ $? == 0 ]] && { run_cmd "$git_switch $original_branch"; }
+  fi
+}
+
 gitmc() { run_cmd "git merge --continue"; }
 gitmo() { run_cmd "git merge $2 origin/$1 --no-edit"; }
 
