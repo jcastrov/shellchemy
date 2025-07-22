@@ -67,14 +67,14 @@ gitma() {
   run_cmd "git merge --abort";
   # If the current branch ends with -qa, -develop or -staging,
   # ask if they want to switch back to the original branch.
-  local current_branch=$(echo_current_branch);
-  if [[ $current_branch =~ -(qa|develop|dev|staging)$ ]]; then
-    local original_branch="${current_branch%-*}";
+  local current_sync_branch=$(echo_current_branch);
+  if [[ $current_sync_branch =~ -(qa|develop|dev|staging)$ ]]; then
+    local original_branch="${current_sync_branch%-*}";
     question "Do you want to switch back to $(color_cyan $original_branch) branch?";
     [[ $? == 0 ]] && { 
       run_cmd "$git_switch $original_branch";
-      question "Do you want to delete `color_red $branch_to_delete` branch locally?"
-      [[ $? == 0 ]] && { run_cmd "git branch -d $current_branch";  }
+      question "Do you want to delete `color_red $current_sync_branch` branch locally?"
+      [[ $? == 0 ]] && { run_cmd "git branch -D $current_sync_branch";  }
     }
   fi
 }
