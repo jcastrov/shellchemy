@@ -223,11 +223,19 @@ gitsw() {
   has_parameters $@ || return 1;
   local branch_to_switch=$1;
   local start_point=$2;
+  local current_branch=$(echo_current_branch);
 
-  [[ "$branch_to_switch" == "-" ]] && {
+  if [[ "$branch_to_switch" == "-" ]]; then
     run_cmd "$git_switch -";
     return 0;
-  }
+  fi
+
+  if [[ "$branch_to_switch" == "." ]]; then
+    branch_to_switch="${current_branch%-*}";
+  elif [[ "$branch_to_switch" =~ "^.-" ]]; then
+    local suffix="${branch_to_switch##*-}";
+    branch_to_switch="$current_branch-$suffix";
+  fi
 
   if [ -z "$2" ]; then
     start_point=$(echo_current_branch);
