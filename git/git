@@ -61,7 +61,7 @@ gitf() {
 }
 
 # Merge commands
-gitm() { run_cmd "git merge $1"; }
+gitm() { run_cmd "git merge $1 --no-edit"; }
 
 gitma() {
   run_cmd "git merge --abort";
@@ -300,26 +300,38 @@ gitsync() {
   # Fetch remote branches.
   gitf;
 
-  local new_branch=${current_branch}-${target_branch};
-  local switch_cmd="$git_switch_c $new_branch origin/$target_branch";
+  local sync_branch=${current_branch}-${target_branch};
+  local switch_cmd="$git_switch_c $sync_branch origin/$target_branch";
+  get_main_branch "main_branch";
   
-  # Verify whether the new branch exists or needs to be recreated.
-  if branch_on_remote_exists $new_branch && branch_locally_exists $new_branch; then
-    question "Do you want to update the current `color_cyan $new_branch` branch?";
-    [[ $? == 0 ]] && { switch_cmd="$git_switch $new_branch"; }
+  if [[ $2 == "cherry-pick" ]]; then
+    local base_branch="main";
+    local cherrypicked_branch="${current_branch}-cherrypicked";
+    run_cmd "$git_switch_c $cherrypicked_branch origin/main";
+    run_cmd "git cherry-pick $(git merge-base OMEDIA-1749 main)..$current_branch";
+    current_branch=$cherrypicked_branch;
+  fi
+
+  # Verify whether the sync branch exists or needs to be recreated.
+  if branch_on_remote_exists $sync_branch && branch_locally_exists $sync_branch; then
+    question "Do you want to update the current `color_cyan $sync_branch` branch?";
+    [[ $? == 0 ]] && { switch_cmd="$git_switch $sync_branch"; }
   fi
   run_cmd "$switch_cmd";
 
-  question "Do you want to merge `color_cyan $new_branch` branch with the main branch using \"ours\" strategy?";
+  question "Do you want to merge `color_cyan $sync_branch` branch with the main branch using \"ours\" strategy?";
   [[ $? == 0 ]] && {
-    get_main_branch "main_branch";
     gitmo $main_branch "-s ours"; 
     if [[ $current_branch == $main_branch ]]; then
       return 0;
     fi
   }
 
-  gitmo $current_branch;
+  gitm $current_branch;
+}
+
+gitsyncchp() {
+  gitsync $1 "cherry-pick";
 }
 
 # Checks if the current directory or a specific one is inside a Git repostory.
