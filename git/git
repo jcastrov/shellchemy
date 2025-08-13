@@ -148,8 +148,8 @@ gitps() {
 gitpsd() {
   is_git_directory || return 1;
   local branch_to_delete=$1;
-  shift;
   [[ $# == 0 ]] && branch_to_delete=$(echo_current_branch);
+  shift;
   branch_on_remote_exists $branch_to_delete && {
     question "Do you want to delete `color_red $branch_to_delete` `color_yellow "on remote"`?";
     [[ $? == 0 ]] && { 
