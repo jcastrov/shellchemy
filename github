@@ -67,12 +67,20 @@ ghopen() {
     [[ $1 == "." ]] && current_branch=$(echo_current_branch);
     repo_url="$(get_repo_url)/tree/$current_branch";
   }
-  [[ $# == 2 ]] && {
+  [[ $# -ge 2 ]] && {
     local file=$2;
     local git_root=$(git rev-parse --show-toplevel 2>/dev/null);
     local remaining_path=${PWD#"$git_root"};
     [[ $file == "." ]] && file="";
     repo_url="$(get_repo_url)/blob/${current_branch}${remaining_path}/$file";
+  }
+  [[ $# -ge 3 ]] && {
+    local line=$3;
+    [[ $line == "." ]] && line=1;
+    [[ $line =~ ^[0-9]+$ ]] || { print_error "Line number must be a number"; return 1; }
+    [[ $line -lt 1 ]] && { print_error "Line number must be greater than 0"; return 1; }
+    [[ $line -gt 100000 ]] && { print_error "Line number must be less than 100000"; return 1; }
+    repo_url="$repo_url#L$line";
   }
   run_cmd "open $repo_url";
 }
