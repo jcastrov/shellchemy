@@ -61,7 +61,19 @@ gitf() {
 }
 
 # Merge commands
-gitm() { run_cmd "git merge $1 --no-edit"; }
+gitm() {
+  has_parameters $@ || return 1;
+  local branch_to_merge=$1;
+  shift;
+  if [[ "$branch_to_merge" == *.. ]]; then
+    local current_branch=$(echo_current_branch);
+    base_branch="${current_branch%-*}";
+    branch_to_merge="${branch_to_merge//../origin/$base_branch}";
+    question "Do you want to merge with `color_cyan $branch_to_merge`?";
+    [[ $? != 0 ]] && return 0;
+  fi
+  run_cmd "git merge --no-edit $branch_to_merge $@";
+}
 
 gitma() {
   run_cmd "git merge --abort";
@@ -80,17 +92,7 @@ gitma() {
 }
 
 gitmc() { run_cmd "git merge --continue"; }
-gitmo() {
-  has_parameters $@ || return 1;
-  local branch_to_merge=$1;
-  if [[ "$branch_to_merge" == "." ]]; then
-    local current_branch=$(echo_current_branch);
-    branch_to_merge="${current_branch%-*}";
-    question "Do you want to merge with `color_cyan $branch_to_merge`?";
-    [[ $? != 0 ]] && return 0;
-  fi
-  run_cmd "git merge $2 origin/$branch_to_merge --no-edit";
-}
+gitmo() { gitm origin/$@; }
 
 # Opens remote on the browser with the current branch or a specific one ($1),
 # optionally opening a specific file ($2).
