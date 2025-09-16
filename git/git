@@ -148,8 +148,11 @@ gitps() {
 gitpsd() {
   is_git_directory || return 1;
   local branch_to_delete=$1;
-  [[ $# == 0 ]] && branch_to_delete=$(echo_current_branch);
-  shift;
+  if [[ $# == 0 ]]; then
+    branch_to_delete=$(echo_current_branch);
+  else
+    shift;
+  fi
   branch_on_remote_exists $branch_to_delete && {
     question "Do you want to delete `color_red $branch_to_delete` `color_yellow "on remote"`?";
     [[ $? == 0 ]] && { 
@@ -157,6 +160,16 @@ gitpsd() {
       run_cmd "git branch --unset-upstream $branch_to_delete";
     }
   }
+}
+gitpsdnv() {
+  is_git_directory || return 1;
+  local branch_to_delete=$1;
+  if [[ $# == 0 ]]; then
+    branch_to_delete=$(echo_current_branch);
+  else
+    shift;
+  fi
+  gitpsd $branch_to_delete --no-verify $@;
 }
 
 # Pushes a branch forcefully
