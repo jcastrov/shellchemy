@@ -54,6 +54,24 @@ gitchp() { run_cmd "git cherry-pick "$@""; }
 gitchpa() { run_cmd "git cherry-pick --abort"; }
 gitchpc() { run_cmd "git cherry-pick --continue"; }
 
+# Clone command
+gitcl() {
+  has_parameters $@ || return 1;
+  run_cmd "git clone $@";
+  local directory_name=${2:-$(basename "${1%.git}")};
+  if [[ -f "$directory_name/.gitmodules" ]]; then
+    question "A `color_magenta .gitmodules` file was found. Do you want to download all submodules?";
+    if [[ $? == 0 ]]; then
+      run_cmd "git -C \"$directory_name\" submodule update --init --recursive";
+    fi
+  fi
+
+  question "Do you want to enter in `color_cyan $directory_name` directory?";
+  if [[ $? == 0 ]]; then
+    cd "$directory_name";
+  fi  
+}
+
 # Fetches branches
 gitf() { 
   print_info "Downloading objects and refs from origin..."
