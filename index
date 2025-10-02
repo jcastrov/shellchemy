@@ -13,28 +13,19 @@ echo_regex_substring() {
 # There are different ways to get the name of the system or the OS. The implemented
 # one is https://github.com/microsoft/WSL/issues/4071#issuecomment-1223393940
 # Another approach is https://stackoverflow.com/a/17072017/1054579
-__get_system_name() {
-  local unameOut=$(uname -a)
-  case "${unameOut}" in
-    # wsl must be first since it will have Linux in the name too
-    *Microsoft*) result="WSL";; 
-    *microsoft*) result="WSL2";; 
-    Linux*)      result="Linux";;
-    Darwin*)     result="Mac";;
-    CYGWIN*)     result="Cygwin";;
-    MINGW*)      result="Windows";; 
-    *Msys)       result="Windows";;
-    *)           result="UNKNOWN:${unameOut}"
+SYSTEM_NAME=$(
+  unameOut=$(uname -a)
+  case "$unameOut" in
+    *Microsoft*) echo "WSL";;
+    *microsoft*) echo "WSL2";;
+    Linux*)      echo "Linux";;
+    Darwin*)     echo "Mac";;
+    CYGWIN*)     echo "Cygwin";;
+    MINGW*)      echo "Windows";;
+    *Msys)       echo "Windows";;
+    *)           echo "UNKNOWN:${unameOut}";;
   esac
-
-  # if [[ ${result} == "Mac" ]] && sysctl -n machdep.cpu.brand_string | grep -q 'Apple M1'; then
-  #   # Check if its an M1. This check should work even if the current processes is running under x86 emulation.
-  #   result="MacM1"
-  # fi
-
-  echo $result;
-}
-SYSTEM_NAME=$(__get_system_name)
+)
 
 source "$shellchemy_path/print"
 source "$shellchemy_path/git/utils"
