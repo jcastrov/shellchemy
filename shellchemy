@@ -21,10 +21,6 @@ EOF
     __shellchemy_restart;
   elif [[ $1 == "update" ]]; then
     __shellchemy_update;
-    # print_info "Updating shellchemy...";
-    # local current_path=$PWD;
-    # __shellchemy_cd && run_cmd "$git_switch main" && gitpl && __shellchemy_restart;
-    # run_cmd "cd $current_path";
   elif [[ $1 == "version" || $1 == "--version" ]]; then
     echo "$SHELLCHEMY_VERSION";
   elif [[ $1 == "vsc" ]]; then
