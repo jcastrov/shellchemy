@@ -48,6 +48,10 @@ __shellchemy_update() {
   # local repo="jcastrov/shellchemy"
   local repo="xivdev/Penumbra"
   local install_dir="${1:-$SHELLCHEMY_PATH}";
+  if [[ $(is_git_directory "$install_dir") -eq 0 ]]; then
+    question_warning "`color_yellow $install_dir` is a git directory. Are you sure you want to continue?";
+    [[ $? != 0 ]] && { print_ok "Update cancelled."; return 1; }
+  fi
 
   print_info "Checking for latest release..."
   local release_json=$(run_cmd "curl -s https://api.github.com/repos/$repo/releases/latest");
