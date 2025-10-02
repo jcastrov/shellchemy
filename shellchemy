@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+SHELLCHEMY_VERSION="v1.0.0";
+
+echo "🧪 `color_green shellchemy` $SHELLCHEMY_VERSION (`color_magenta $SYSTEM_NAME`)";
 
 shellchemy() {
   if [[ -z $1 || $1 == "help" ]]; then
