@@ -20,6 +20,11 @@ EOF
   elif [[ $1 == "restart" ]]; then
     __shellchemy_restart;
   elif [[ $1 == "update" ]]; then
+    __shellchemy_update;
+    # print_info "Updating shellchemy...";
+    # local current_path=$PWD;
+    # __shellchemy_cd && run_cmd "$git_switch main" && gitpl && __shellchemy_restart;
+    # run_cmd "cd $current_path";
   elif [[ $1 == "version" || $1 == "--version" ]]; then
     echo "$SHELLCHEMY_VERSION";
   elif [[ $1 == "vsc" ]]; then
@@ -38,3 +43,61 @@ __shellchemy_restart() {
   print_info "Restarting shellchemy...";
   run_cmd ". $shellchemy_path/index";
 }
+
+__shellchemy_update() {
+  # local repo="jcastrov/shellchemy"
+  local repo="xivdev/Penumbra"
+  local install_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+  print_info "Checking for latest release..."
+  local release_json=$(run_cmd2 "curl -s https://api.github.com/repos/$repo/releases/latest");
+  local latest_version=$(echo "$release_json" | grep '"tag_name":' | cut -d '"' -f 4)
+  if [[ -z "$latest_version" ]]; then
+    print_error "Could not find tag name."
+    return 1
+  fi
+  if [[ "$latest_version" == "$SHELLCHEMY_VERSION" ]]; then
+    print_ok "shellchemy is already up-to-date (version `color_green $SHELLCHEMY_VERSION`)"
+    return 0
+  fi
+  local zip_url=$(echo "$release_json" | grep "browser_download_url.*zip" | cut -d '"' -f 4);
+  if [[ -z "$zip_url" ]]; then
+    print_error "Could not find release download URL."
+    return 1
+  fi
+
+  # print_info "New version available: `color_green $latest_version` (current: `color_red $SHELLCHEMY_VERSION`)"
+  question "New version available: `color_green $latest_version` (current: `color_red $SHELLCHEMY_VERSION`). Do you want to continue?";
+  [[ $? != 0 ]] && { print_warning "Update cancelled."; return 1; }
+
+  # -d → create a directory (not a file).
+  # XXXXXX → required pattern for mktemp; it gets replaced with random characters.
+  local tmp_dir=$(mktemp -d /tmp/shellchemy.XXXXXX);
+  print_info "Using temporary directory: $tmp_dir";
+
+  # Download the release archive
+  # -L : follow redirects (GitHub release URLs redirect to Amazon S3 storage)
+  # -o : write output to a file instead of stdout
+  run_cmd2 "curl -L \"$zip_url\" -o \"$tmp_dir/release.zip\""
+
+  print_info "Extracting..."
+  # Unzip the archive into the temporary directory
+  # -q : quiet mode (suppress most output)
+  # -o : overwrite existing files without prompting
+  # -d : extract into the specified directory
+  run_cmd2 "unzip -q -o \"$tmp_dir/release.zip\" -d \"$tmp_dir\""
+
+  # Remove the archive after extraction to save space
+  rm "$tmp_dir/release.zip"
+
+  echo "📂 Installing to $install_dir..."
+  # Sync extracted files into the install directory
+  # -a      : "archive" mode (recursive copy, preserve symlinks, permissions, timestamps)
+  # --delete: remove files in the destination that don’t exist in the source
+  # rsync -a --delete "$tmp_dir"/*/ "$install_dir"
+
+  # rm -rf "$tmp_dir"
+
+  echo "✅ Updated from $SHELLCHEMY_VERSION → $latest_version"
+}
+
