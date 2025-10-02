@@ -50,7 +50,7 @@ __shellchemy_update() {
   local install_dir="${1:-$SHELLCHEMY_PATH}";
 
   print_info "Checking for latest release..."
-  local release_json=$(run_cmd2 "curl -s https://api.github.com/repos/$repo/releases/latest");
+  local release_json=$(run_cmd "curl -s https://api.github.com/repos/$repo/releases/latest");
   local latest_version=$(echo "$release_json" | grep '"tag_name":' | cut -d '"' -f 4)
   if [[ -z "$latest_version" ]]; then
     print_error "Could not find tag name."
@@ -78,14 +78,14 @@ __shellchemy_update() {
   # Download the release archive
   # -L : follow redirects (GitHub release URLs redirect to Amazon S3 storage)
   # -o : write output to a file instead of stdout
-  run_cmd2 "curl -L \"$zip_url\" -o \"$tmp_dir/release.zip\""
+  run_cmd "curl -L \"$zip_url\" -o \"$tmp_dir/release.zip\""
 
   print_info "Extracting..."
   # Unzip the archive into the temporary directory
   # -q : quiet mode (suppress most output)
   # -o : overwrite existing files without prompting
   # -d : extract into the specified directory
-  run_cmd2 "unzip -q -o \"$tmp_dir/release.zip\" -d \"$tmp_dir\""
+  run_cmd "unzip -q -o \"$tmp_dir/release.zip\" -d \"$tmp_dir\""
 
   # Remove the archive after extraction to save space
   rm "$tmp_dir/release.zip"
