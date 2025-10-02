@@ -5,13 +5,16 @@ echo "🧪 `color_green shellchemy` $SHELLCHEMY_VERSION (`color_magenta $SYSTEM_
 
 shellchemy() {
   if [[ -z $1 || $1 == "help" ]]; then
-    local s1="usage: shellchemy [cd] [restart] [update] [vsc]";
-    local s2="    `color_cyan cd`       Change directory to shellchemy";
-    local s3="    `color_cyan help`     Show shellchemy available commands";
-    local s4="    `color_cyan restart`  Apply changes made to files under shellchemy directory";
-    local s5="    `color_cyan update`   Pull new changes and restart shellchemy";
-    local s6="    `color_cyan vsc`      Open shellchemy directory in Visual Studio Code and change directory";
-    print_info "$s1\n$s2\n$s3\n$s4\n$s5\n$s6";
+    print_info "$(cat <<EOF
+usage: shellchemy [cd] [restart] [update] [version] [vsc]
+    $(color_cyan cd)       Change directory to shellchemy
+    $(color_cyan help)     Show shellchemy available commands
+    $(color_cyan restart)  Apply changes made to files under shellchemy directory
+    $(color_cyan update)   Pull new changes and restart shellchemy
+    $(color_cyan version)  Shows the current version of shellchemy
+    $(color_cyan vsc)      Open shellchemy directory in Visual Studio Code and change directory
+EOF
+)"
   elif [[ $1 == "cd" ]]; then
     __shellchemy_cd;
   elif [[ $1 == "restart" ]]; then
