@@ -149,6 +149,13 @@ run_cmd() {
   return $?;
 }
 
+run_cmd2() {
+  # print command to stderr (so it’s visible outside)
+  print_cmd "$*" >&2;
+
+  eval "$@";
+}
+
 # Opens VSCode for the current directory. If $1 is specified, VSCode opens for
 # the root of the git repository, or that path.
 vsc() {
