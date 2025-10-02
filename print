@@ -93,15 +93,17 @@ print_cmd() {
 
 
 
-question() {
-  local question_string="`color_magenta ▒` $1 [y/`color_cyan N`] ";
+__question() {
+  local color_func="$1";
+  shift;
+  local question_string="`$color_func ▒` $1 [y/`color_cyan N`] ";
   if [[ -n $ZSH_VERSION ]]; then
-    # https://askubuntu.com/a/1246583/652908
     read "response?`print -P "$question_string"`";
   else
-    # https://stackoverflow.com/a/3232082/1054579
-    read -r -p "$question_string" response;
+    read -r -p "$question_string" response
   fi
-  [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]] && return 0;
-  return 1;
+  [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
 }
+
+question() { __question color_magenta "$@"; }
+question_warning() { __question color_yellow "$@"; }
