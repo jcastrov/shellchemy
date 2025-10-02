@@ -5,7 +5,15 @@ __get_ps1_current_path() { echo "%~"; }
 
 prompt_command() {
   local ps1_path="$(prompt_bg_white " $(__get_ps1_current_path) ")";
-  local git_root=$(git rev-parse --show-toplevel 2>/dev/null);
+  local git_root=$(
+    path=$(git rev-parse --show-toplevel 2>/dev/null) || exit 1 
+    # Turn a Windows path into a Unix path if on Cygwin or Git Bash 
+    if command -v cygpath >/dev/null 2>&1; then
+      cygpath -u "$path"
+    else
+      echo "$path"
+    fi
+  );
   local branch=" ";
   if [[ -n $git_root ]]; then
     local repository="`basename $git_root`";
@@ -17,14 +25,15 @@ prompt_command() {
       ps1_path="$(prompt_bg_blue " $repository ")$(prompt_bg_white " $remaining_path_color")";
     fi
 
-    local current_branch=$(echo_current_branch);
-    branch=" `prompt_fg_green $current_branch` ";
-    if [ "$(git status 2> /dev/null | tail -n1)" != "nothing to commit, working tree clean" ]; then
-      branch=" `prompt_fg_yellow $current_branch` ";
+    local current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null);
+    branch=" $(prompt_fg_yellow "$current_branch") "
+    if git diff --quiet HEAD -- 2>/dev/null; then
+      branch=" $(prompt_fg_green "$current_branch") "
     fi
   fi
   PS1="$(prompt_fg_black "$ps1_path")$branch`prompt_fg_magenta \$` ";
 }
 
+# Hooks for Bash & Zsh
 [ ${BASH_VERSION} ] && PROMPT_COMMAND=prompt_command;
 [ ${ZSH_VERSION} ] && precmd() { prompt_command; }
