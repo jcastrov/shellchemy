@@ -28,7 +28,7 @@ EOF
   elif [[ $1 == "version" || $1 == "--version" ]]; then
     echo "$SHELLCHEMY_VERSION";
   elif [[ $1 == "vsc" ]]; then
-    vsc "$shellchemy_path";
+    vsc "$SHELLCHEMY_PATH";
     __shellchemy_cd;
   else
     print_error "`color_red $1` is not a shellchemy command. See `color_cyan "shellchemy help"`."
@@ -37,17 +37,17 @@ EOF
 
 __shellchemy_cd() {
   print_info "Changing directory to `color_cyan shellchemy`...";
-  run_cmd "cd $shellchemy_path";
+  run_cmd "cd $SHELLCHEMY_PATH";
 }
 __shellchemy_restart() { 
   print_info "Restarting shellchemy...";
-  run_cmd ". $shellchemy_path/index";
+  run_cmd ". $SHELLCHEMY_PATH/index";
 }
 
 __shellchemy_update() {
   # local repo="jcastrov/shellchemy"
   local repo="xivdev/Penumbra"
-  local install_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  local install_dir="${1:-$SHELLCHEMY_PATH}";
 
   print_info "Checking for latest release..."
   local release_json=$(run_cmd2 "curl -s https://api.github.com/repos/$repo/releases/latest");

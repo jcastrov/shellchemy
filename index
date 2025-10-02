@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # Scripts path depends on the current shell.
-shellchemy_path=$(dirname "${BASH_SOURCE[0]}");
-if [[ -n $ZSH_VERSION ]]; then shellchemy_path=${0:A:h}; fi
+SHELLCHEMY_PATH=$(dirname "${BASH_SOURCE[0]}");
+if [[ -n $ZSH_VERSION ]]; then SHELLCHEMY_PATH=${0:A:h}; fi
 
 echo_regex_substring() {
   local substring=$(echo "$1" | grep -oE "$2");
@@ -27,13 +27,13 @@ SYSTEM_NAME=$(
   esac
 )
 
-source "$shellchemy_path/print"
-source "$shellchemy_path/git/utils"
-source "$shellchemy_path/git/git"
-source "$shellchemy_path/github"
-source "$shellchemy_path/jira"
-source "$shellchemy_path/shellchemy"
-source "$shellchemy_path/windows"
+source "$SHELLCHEMY_PATH/print"
+source "$SHELLCHEMY_PATH/git/utils"
+source "$SHELLCHEMY_PATH/git/git"
+source "$SHELLCHEMY_PATH/github"
+source "$SHELLCHEMY_PATH/jira"
+source "$SHELLCHEMY_PATH/shellchemy"
+source "$SHELLCHEMY_PATH/windows"
 
 
 cdnvm() {
