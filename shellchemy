@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-SHELLCHEMY_VERSION="v1.0.0";
+SHELLCHEMY_VERSION="1.0.0";
+SHELLCHEMY_REPO="jcastrov/shellchemy";
+SHELLCHEMY_LATEST_RELEASE_URL="http://api.github.com/repos/$SHELLCHEMY_REPO/releases/latest";
 
 echo "🧪 `color_green shellchemy` $SHELLCHEMY_VERSION (`color_magenta $SYSTEM_NAME`)";
 
@@ -17,6 +19,8 @@ EOF
 )"
   elif [[ $1 == "cd" ]]; then
     __shellchemy_cd;
+  elif [[ $1 == "release" ]]; then
+    __shellchemy_release;
   elif [[ $1 == "restart" ]]; then
     __shellchemy_restart;
   elif [[ $1 == "update" ]]; then
@@ -24,8 +28,7 @@ EOF
   elif [[ $1 == "version" || $1 == "--version" ]]; then
     echo "$SHELLCHEMY_VERSION";
   elif [[ $1 == "vsc" ]]; then
-    vsc "$SHELLCHEMY_PATH";
-    __shellchemy_cd;
+    vsc "$SHELLCHEMY_PATH"; __shellchemy_cd;
   else
     print_error "`color_red $1` is not a shellchemy command. See `color_cyan "shellchemy help"`."
   fi
@@ -35,14 +38,86 @@ __shellchemy_cd() {
   print_info "Changing directory to `color_cyan shellchemy`...";
   run_cmd "cd $SHELLCHEMY_PATH";
 }
+
+__shellchemy_release() {
+  is_git_directory "$SHELLCHEMY_PATH" || return 1;
+
+  # Ensure no uncommitted changes
+  if ! git diff-index --quiet HEAD --; then
+    print_error "Be sure to commit all your changes before creating a release.";
+    return 1
+  fi
+
+  if [[ ! $SHELLCHEMY_VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    print_error "SHELLCHEMY_VERSION must be in the format X.Y.Z (e.g., 1.2.3)";
+    return 1;
+  fi
+
+  print_info "Checking for latest release..."
+  # local release_json=$(run_cmd "curl -s $SHELLCHEMY_LATEST_RELEASE_URL");
+  # local latest_version=$(echo "$release_json" | grep '"tag_name":' | cut -d '"' -f 4 | sed 's/^v//');
+  # if [[ -z "$latest_version" ]]; then
+  #   print_error "Could not find tag name with the latest version."
+  #   return 1
+  # fi
+  local latest_version="0.0.1";
+
+  if [[ $SHELLCHEMY_VERSION == "$latest_version" ]]; then
+    print_warning "Version `color_green $SHELLCHEMY_VERSION` is already released.";
+    return 0;
+  fi
+
+  # Parse versions
+  IFS='.' read -r cur_major cur_minor cur_patch <<< "$latest_version"
+  IFS='.' read -r new_major new_minor new_patch <<< "$SHELLCHEMY_VERSION"
+
+  # Validate sequential bump
+  if ! (
+    # patch bump
+    { [[ $new_major -eq $cur_major ]] &&
+      [[ $new_minor -eq $cur_minor ]] &&
+      [[ $new_patch -eq $((cur_patch + 1)) ]]; } ||
+
+    # minor bump
+    { [[ $new_major -eq $cur_major ]] &&
+      [[ $new_minor -eq $((cur_minor + 1)) ]] &&
+      [[ $new_patch -eq 0 ]]; } ||
+
+    # major bump
+    { [[ $new_major -eq $((cur_major + 1)) ]] &&
+      [[ $new_minor -eq 0 ]] &&
+      [[ $new_patch -eq 0 ]]; }
+  ); then
+    print_warning "Invalid version bump:\n    - Latest version released: `color_green $latest_version`\n    - Version to release: `color_red $SHELLCHEMY_VERSION`."
+    question_warning "Do you want to continue?";
+    [[ $? != 0 ]] && { print_ok "Release cancelled."; return 0; }
+  fi
+
+  local tmp_dir=$(mktemp -d -t "shellchemy-release-XXXX");
+  print_info "Using temporary directory: `color_cyan $tmp_dir`";
+
+  local tmp_zip="$tmp_dir/shellchemy.zip";
+
+  # print_info "Creating release package..."
+  # run_cmd "git archive --format zip --output \"$tmp_zip\" HEAD"
+
+  # print_info "Creating GitHub release v$SHELLCHEMY_VERSION..."
+  # gh release create "v$SHELLCHEMY_VERSION" "$tmp_zip" --title "Shellchemy $SHELLCHEMY_VERSION" 
+
+  print_info "Removing temporary directory";
+  run_cmd "rm -rf $tmp_dir"
+
+  print_ok "Release v$SHELLCHEMY_VERSION created successfully!" \
+    "\n  https://github.com/$SHELLCHEMY_REPO/releases/tag/v$SHELLCHEMY_VERSION";
+
+}
+
 __shellchemy_restart() { 
   print_info "Restarting shellchemy...";
   run_cmd ". $SHELLCHEMY_PATH/index";
 }
 
 __shellchemy_update() {
-  # local repo="jcastrov/shellchemy"
-  local repo="xivdev/Penumbra"
   local install_dir="${1:-$SHELLCHEMY_PATH}";
   if [[ $(is_git_directory "$install_dir") -eq 0 ]]; then
     question_warning "`color_yellow $install_dir` is a git directory. Are you sure you want to continue?";
@@ -50,10 +125,10 @@ __shellchemy_update() {
   fi
 
   print_info "Checking for latest release..."
-  local release_json=$(run_cmd "curl -s https://api.github.com/repos/$repo/releases/latest");
+  local release_json=$(run_cmd "curl -s $SHELLCHEMY_LATEST_RELEASE_URL");
   local latest_version=$(echo "$release_json" | grep '"tag_name":' | cut -d '"' -f 4)
   if [[ -z "$latest_version" ]]; then
-    print_error "Could not find tag name."
+    print_error "Could not find tag name with the latest version."
     return 1
   fi
   if [[ "$latest_version" == "$SHELLCHEMY_VERSION" ]]; then

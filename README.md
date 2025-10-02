@@ -1,4 +1,4 @@
-# Schellchemy
+# Shellchemy
 Utility functions to run multiple commands at once for Z Shell and Bash. 
 
 ## Basic Installation
