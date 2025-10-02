@@ -73,7 +73,7 @@ __shellchemy_update() {
   # -d → create a directory (not a file).
   # XXXXXX → required pattern for mktemp; it gets replaced with random characters.
   local tmp_dir=$(mktemp -d /tmp/shellchemy.XXXXXX);
-  print_info "Using temporary directory: $tmp_dir";
+  print_info "Downloading zipped file...";
 
   # Download the release archive
   # -L : follow redirects (GitHub release URLs redirect to Amazon S3 storage)
@@ -90,14 +90,15 @@ __shellchemy_update() {
   # Remove the archive after extraction to save space
   rm "$tmp_dir/release.zip"
 
-  echo "📂 Installing to $install_dir..."
+  print_info "Installing to $install_dir..."
   # Sync extracted files into the install directory
   # -a      : "archive" mode (recursive copy, preserve symlinks, permissions, timestamps)
   # --delete: remove files in the destination that don’t exist in the source
-  # rsync -a --delete "$tmp_dir"/*/ "$install_dir"
+  rsync -a --delete "$tmp_dir"/*/ "$install_dir"
 
-  # rm -rf "$tmp_dir"
+  print_info "Removing temporary directory";
+  run_cmd "rm -rf $tmp_dir"
 
-  echo "✅ Updated from $SHELLCHEMY_VERSION → $latest_version"
+  __shellchemy_restart;
 }
 
