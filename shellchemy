@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 SHELLCHEMY_VERSION="1.0.1";
 SHELLCHEMY_REPO="jcastrov/shellchemy";
-SHELLCHEMY_LATEST_RELEASE_URL="http://api.github.com/repos/$SHELLCHEMY_REPO/releases/latest";
+SHELLCHEMY_LATEST_RELEASE_URL="https://api.github.com/repos/$SHELLCHEMY_REPO/releases/latest";
 
 echo "🧪 `color_green shellchemy` $SHELLCHEMY_VERSION (`color_magenta $SYSTEM_NAME`)";
 
@@ -61,8 +61,7 @@ __shellchemy_release() {
   fi
 
   print_info "Checking for latest release..."
-  local release_json=$(run_cmd "curl -s $SHELLCHEMY_LATEST_RELEASE_URL");
-  local latest_version=$(echo "$release_json" | grep '"tag_name":' | cut -d '"' -f 4 | sed 's/^v//');
+  local latest_version=$(run_cmd "curl -s $SHELLCHEMY_LATEST_RELEASE_URL | grep '\"tag_name\":' | cut -d '\"' -f 4 | sed 's/^v//'");
   if [[ -z "$latest_version" ]]; then
     print_error "Could not find tag name with the latest version."
     return 1
