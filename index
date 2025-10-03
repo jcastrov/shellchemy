@@ -133,6 +133,16 @@ hide_output() {
   return $?;
 }
 
+
+open_url() { print_error "Unsupported system to open URL: `color_yellow $SYSTEM_NAME`."; return 1; }
+if [[ $SYSTEM_NAME == "Mac" ]]; then
+  open_url() { run_cmd "open $1"; }
+elif [[ $SYSTEM_NAME == "Windows" || $SYSTEM_NAME == "Cygwin" || $SYSTEM_NAME == "MINGW" || $SYSTEM_NAME == "Msys" ]]; then
+  open_url() { run_cmd "start $1"; }
+elif [[ $SYSTEM_NAME == "WSL" || $SYSTEM_NAME == "WSL2" ]]; then
+  open_url() { run_cmd "wslview $1"; }
+fi
+
 # Prints and runs a command ($1).
 # (Optional) Assigns the output to a variable name without "$" ($2)
 run_cmd() {

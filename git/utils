@@ -97,11 +97,20 @@ get_api_repo_url() {
   echo "https://api.github.com/repos/$(basename $(dirname "$repo_path"))/$(basename "$repo_path")";
 }
 
-# Gets the URL of the repository. Make sure your directory and parent directory
-# have the name of the URL of the repo. For instance, if your repo is
-# https://github.com/microsoft/vscode, the root directory name must be "vscode"
-# and its parent "microsoft".
+# Gets the URL of the repository.
 get_repo_url() {
-  local repo_path=$(eval "git rev-parse --show-toplevel");
-  echo "https://github.com/$(basename $(dirname "$repo_path"))/$(basename "$repo_path")";
+  local url=$(git remote get-url origin 2>/dev/null)
+  if [ -z "$url" ]; then
+    echo "Not a git repository or no remote origin"
+    return 1
+  fi
+  
+  # Convert SSH URL to HTTPS if needed
+  if [[ $url == git@* ]]; then
+    url=${url/git@/https://}
+    url=${url/:/\/}
+  fi
+  
+  # Remove .git suffix
+  echo ${url%.git}
 }

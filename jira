@@ -9,7 +9,7 @@ jira() {
   local ticket=$1;
   [[ -z $1 ]] && ticket=$(echo_current_branch);
   validate_jira_branch $ticket &&
-    run_cmd "open $(echo_jira_ticket_url $ticket)";
+    open_url $(echo_jira_ticket_url $ticket);
 }
 
 validate_jira_branch() {

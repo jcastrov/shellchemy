@@ -121,7 +121,7 @@ gito() {
   [ -z "$1" ] && get_current_branch branch;
   [ -n "$2" ] && { gitof $2 $1; return 0; }
   print_info "Opening `color_cyan $branch` on remote...";
-  run_cmd "open `get_repo_url`/tree/$branch";
+  open_url "`get_repo_url`/tree/$branch";
 }
 
 # Opens a specific file on remote for the current branch. If $2 is specified,
@@ -132,7 +132,7 @@ gitof() {
   is_git_directory && has_parameters $@ && local branch=$2 || return 1;
   [ -z "$2" ] && get_current_branch branch;
   print_info "Opening file in `color_cyan $branch` on remote...";
-  run_cmd "open `get_repo_url`/blob/$branch/$1";
+  open_url "`get_repo_url`/blob/$branch/$1";
 }
 
 # Pull commands

@@ -31,7 +31,7 @@ __prepate_branches() {
 
   if [[ $action == "compare" ]]; then
     print_ok "Comparing branch `color_cyan $head` with branch `color_cyan $base`";
-    run_cmd "open `get_repo_url`/compare/$base...$head";
+    open_url "`get_repo_url`/compare/$base...$head";
     return 0;
   fi
 
@@ -82,7 +82,7 @@ ghopen() {
     [[ $line -gt 100000 ]] && { print_error "Line number must be less than 100000"; return 1; }
     repo_url="$repo_url#L$line";
   }
-  run_cmd "open $repo_url";
+  open_url $repo_url;
 }
 
 ghprc() {
@@ -101,5 +101,5 @@ ghprf() {
     get_current_branch current_branch;
     search_text="head:$current_branch";
   }
-  run_cmd "open `get_repo_url`/pulls?q=$search_text"
+  open_url "`get_repo_url`/pulls?q=$search_text"
 }
