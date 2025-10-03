@@ -41,15 +41,22 @@ __shellchemy_cd() {
 
 __shellchemy_release() {
   is_git_directory "$SHELLCHEMY_PATH" || return 1;
+  cmd_exists gh || return 1;
 
-  # Ensure no uncommitted changes
-  if ! git diff-index --quiet HEAD --; then
-    print_error "Be sure to commit all your changes before creating a release.";
-    return 1
+  local gh_auth_status=$(gh auth status 2>&1);
+  if [[ $gh_auth_status =~ ^"You are not logged" ]]; then
+    print_error "$gh_auth_status";
+    return 1;
   fi
 
+  # Ensure no uncommitted changes
+  # if ! git diff-index --quiet HEAD --; then
+  #   print_error "Be sure to commit all your changes before creating a release.";
+  #   return 1
+  # fi
+
   if [[ ! $SHELLCHEMY_VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    print_error "SHELLCHEMY_VERSION must be in the format X.Y.Z (e.g., 1.2.3)";
+    print_error "\$SHELLCHEMY_VERSION variable must be in the format X.Y.Z (e.g., 1.2.3)";
     return 1;
   fi
 
@@ -94,21 +101,27 @@ __shellchemy_release() {
   fi
 
   local tmp_dir=$(mktemp -d -t "shellchemy-release-XXXX");
-  print_info "Using temporary directory: `color_cyan $tmp_dir`";
-
   local tmp_zip="$tmp_dir/shellchemy.zip";
 
-  # print_info "Creating release package..."
-  # run_cmd "git archive --format zip --output \"$tmp_zip\" HEAD"
+  print_info "Creating release package..."
+  run_cmd "git archive --format zip  --prefix="shellchemy/" --output \"$tmp_zip\" HEAD"
 
-  # print_info "Creating GitHub release v$SHELLCHEMY_VERSION..."
-  # gh release create "v$SHELLCHEMY_VERSION" "$tmp_zip" --title "Shellchemy $SHELLCHEMY_VERSION" 
+  print_info "Creating GitHub release v$SHELLCHEMY_VERSION..."
+  cmd=(gh release create "v$SHELLCHEMY_VERSION" "$tmp_zip" \
+     --title "Release $SHELLCHEMY_VERSION" \
+     --notes "")
+  print_cmd "${cmd[@]}";
+  if ! "${cmd[@]}"; then
+    print_error "Failed to create release v$SHELLCHEMY_VERSION";
+    run_cmd "rm -rf $tmp_dir"
+    return 1;
+  fi
 
   print_info "Removing temporary directory";
   run_cmd "rm -rf $tmp_dir"
 
-  print_ok "Release v$SHELLCHEMY_VERSION created successfully!" \
-    "\n  https://github.com/$SHELLCHEMY_REPO/releases/tag/v$SHELLCHEMY_VERSION";
+  print_ok "Release `color_cyan v$SHELLCHEMY_VERSION` created successfully!\
+\n  https://github.com/$SHELLCHEMY_REPO/releases/tag/v$SHELLCHEMY_VERSION"
 
 }
 

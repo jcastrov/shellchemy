@@ -51,12 +51,11 @@ cdnvm() {
 }
 
 # Checks if a command is avaiable in your current session. Returns 0 if
-# the command exists. Otherwise, shows an error message and returns 1 if 
-# the command doesn't exist.
+# the command is found. Otherwise, shows an error message and returns 1.
 #     $1: Command.
 cmd_exists() {
   if ! command -v $1 &> /dev/null; then 
-    print_error "`color_cyan $1` command doesn't exist.";
+    print_error "`color_cyan $1` command not found.";
     return 1;
   fi
 }
