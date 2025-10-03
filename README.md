@@ -1,58 +1,115 @@
 # Shellchemy
-Utility functions to run multiple commands at once for Z Shell and Bash. 
 
-## Basic Installation
-1. Clone this repository to any path. Take note of the path where you cloned it using the `pwd` command.
-    ```
-    $ cd shellchemy && pwd
-    /Users/myuser/shellchemy
-    ```
-2. Open your favorite text editor and access your shell configuration file. Depending on your OS and shell, the file's name can be `~/.bashrc`, `~/.zprofile`, `~/.bash_profile`, `.profile`, etc.
-3. Add the following line at the end of the file to execute shellchemy. Ensure the source path is the same as in step 1, followed by `/index`.
-    ```
-    source /Users/myuser/shellchemy/index
-    ```
-4. Open a new terminal to apply your changes.
+A utility library for running multiple commands efficiently in Z Shell and Bash environments.
 
-<br>
+## Features
 
-## Additional features
-### Prompt theme
-Add the following line to execute the theme **after** the the line executing shellchemy.
+- **Command Orchestration**: Run multiple commands simultaneously with ease
+- **Enhanced Prompt**: Customizable shell prompt (optional)
+- **Jira Integration**: Quick access to Jira tickets
+- **Node Version Management**: Seamless Node.js version switching with `cdnvm`
+- **Cross-shell Compatibility**: Works with both Z Shell and Bash
+
+## Installation
+
+### Quick Install
+
+1. Navigate to your desired installation directory (we recommend `$HOME`):
+   ```bash
+   cd ~
+   ```
+
+2. Run the installation command:
+   ```bash
+   n=shellchemy; f=$n.zip && \
+   curl -sL $(
+   curl -s https://api.github.com/repos/jcastrov/$n/releases/latest \
+       | grep "browser_download_url" | grep "$f" | cut -d '"' -f 4
+   ) -o "$f" && \
+   unzip -q "$f" && \
+   rm "$f" && \
+   printf '%.0s-' {1..40}; echo && \
+   echo -e "\033[32msource $PWD/$n/index\nsource $PWD/$n/prompt\033[0m"
+   ```
+
+3. **Successful installation** will display two green lines:
+   - `source /path/to/shellchemy/index` - Core utility functions
+   - `source /path/to/shellchemy/prompt` - Enhanced prompt (optional)
+
+4. Add the desired lines to your shell configuration file:
+   - **Bash**: `~/.bashrc` or `~/.bash_profile`
+   - **Z Shell**: `~/.zshrc` or `~/.zprofile`
+   - **Universal**: `~/.profile`
+
+5. Reload your shell or start a new terminal session.
+
+## Configuration
+
+### Jira Integration
+
+To enable Jira ticket functionality, set your organization name **before** sourcing Shellchemy:
+
+```bash
+SHELLCHEMY_JIRA_ORGANIZATION='myorganization'
+source /path/to/shellchemy/index
 ```
-source /Users/myuser/shellchemy/prompt
-```
-### Jira
-Add the line with the organization name variable **before** the line executing shellchemy. If the Jira URL is `https://myorganization.atlassian.net/`, then the value should be `'myorganization'`.
-```
-BP_JIRA_ORGANIZATION='myorganization'
-```
+
+*Example*: If your Jira URL is `https://mycompany.atlassian.net/`, use `'mycompany'`
+
 ### Node Version Manager
-If you lack permissions to add `.nvmrc` files and need to work with different versions of Node in every repository, you can use the `cdnvm` function. Define custom aliases to change directory and use the desired version.
-```
-alias cdrepo1="cdnvm /Users/myuser/myorganization/repo1 10.13";
-alias cdrepo2="cdnvm /Users/myuser/myorganization/repo2 16";
-```
 
-<br>
+For projects requiring specific Node.js versions without `.nvmrc` files:
 
-## Shell configuration file example
-Assuming you install shellchemy with all the additional features, your shell configuration file should look something like this:
-```
-BP_JIRA_ORGANIZATION='myorganization'
-source /Users/myuser/shellchemy/index
-source /Users/myuser/shellchemy/prompt
-
-alias cdrepo1="cdnvm /Users/myuser/myorganization/repo1 10.13";
-alias cdrepo2="cdnvm /Users/myuser/myorganization/repo2 16";
+```bash
+alias cdproject1="cdnvm /path/to/project1 18.12"
+alias cdproject2="cdnvm /path/to/project2 16.15"
 ```
 
-<br>
+This automatically switches to the specified Node version when changing directories.
 
-## Common issues
-### command not found: ^M
-Perhaps you clonned the repository with `autocrlf` enabled. You can disabled it in your `~/.gitconfig` file or run
+## Complete Configuration Example
+
+```bash
+# Shellchemy Configuration
+SHELLCHEMY_JIRA_ORGANIZATION='mycompany'
+
+# Core functionality
+source /Users/username/shellchemy/index
+
+# Enhanced prompt (optional)
+source /Users/username/shellchemy/prompt
+
+# Project-specific Node versions
+alias cdapi="cdnvm /Projects/api 18.12"
+alias cdweb="cdnvm /Projects/web 16.15"
+alias cdmobile="cdnvm /Projects/mobile 14.20"
 ```
+
+## Troubleshooting
+
+### "command not found: ^M" Error
+
+This typically occurs when repository files have Windows-style line endings.
+
+**Solution 1: Disable autocrlf globally**
+```bash
 git config --global core.autocrlf false
 ```
-If you need to keep `autocrlf` enabled, you can explore the [Github issue in ohmyzsh](https://github.com/ohmyzsh/ohmyzsh/issues/1363) for more options.
+
+**Solution 2: Convert existing files**
+```bash
+# Remove shelchemy
+rm -rf shellchemy
+# Re-run installation with autocrlf disabled
+```
+
+For more options, refer to the [Oh My Zsh related issue](https://github.com/ohmyzsh/ohmyzsh/issues/1363).
+
+## Support
+
+- **Shell Compatibility**: Z Shell (zsh) 5.0+, Bash 4.0+
+- **Platforms**: macOS, Linux, Windows (WSL)
+
+---
+
+*Shellchemy - Streamline your shell workflow*
