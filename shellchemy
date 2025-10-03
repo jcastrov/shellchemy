@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-SHELLCHEMY_VERSION="1.0.1";
+SHELLCHEMY_VERSION="1.1.0";
 SHELLCHEMY_REPO="jcastrov/shellchemy";
 SHELLCHEMY_LATEST_RELEASE_URL="https://api.github.com/repos/$SHELLCHEMY_REPO/releases/latest";
 
@@ -50,10 +50,10 @@ __shellchemy_release() {
   fi
 
   # Ensure no uncommitted changes
-  # if ! git diff-index --quiet HEAD --; then
-  #   print_error "Be sure to commit all your changes before creating a release.";
-  #   return 1
-  # fi
+  if ! git diff-index --quiet HEAD --; then
+    print_error "Be sure to commit all your changes before creating a release.";
+    return 1
+  fi
 
   if [[ ! $SHELLCHEMY_VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     print_error "\$SHELLCHEMY_VERSION variable must be in the format X.Y.Z (e.g., 1.2.3)";
@@ -119,7 +119,6 @@ __shellchemy_release() {
 }
 
 __shellchemy_restart() { 
-  print_info "Restarting shellchemy...";
   run_cmd ". $SHELLCHEMY_PATH/index";
 }
 
@@ -130,7 +129,7 @@ __shellchemy_update() {
     [[ $? != 0 ]] && { print_ok "Update cancelled."; return 1; }
   fi
 
-  print_info "Checking for latest release..."
+  print_info "Gettting latest version information from GitHub...";
   local release_json=$(run_cmd "curl -s $SHELLCHEMY_LATEST_RELEASE_URL");
   local latest_version=$(echo "$release_json" | grep '"tag_name":' | cut -d '"' -f 4)
   if [[ -z "$latest_version" ]]; then
