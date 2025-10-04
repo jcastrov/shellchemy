@@ -2,41 +2,59 @@
 
 print_format "🧪 `color_green shellchemy` $SHELLCHEMY_VERSION (`color_magenta $SYSTEM_NAME`)";
 
-shellchemy() {
-  if [[ -z $1 || $1 == "help" ]]; then
-    print_info "$(cat <<EOF
-usage: shellchemy [cd] [restart] [update] [version] [vsc]
+__shellchemy_commands_help_cmd() {
+  print_info "$(cat <<EOF
+usage: shellchemy [cd] [help] [install <version> [<path>]]
+                    [restart] [update [<path>]] [version] [vsc]
+
+Available commands:
     $(color_cyan cd)       Change directory to shellchemy
     $(color_cyan help)     Show shellchemy available commands
+    $(color_cyan install)  Install a specific <version> of shellchemy to the current path
+             (or to a specific <path>)
     $(color_cyan restart)  Apply changes made to files under shellchemy directory
-    $(color_cyan update)   Pull new changes and restart shellchemy
-    $(color_cyan version)  Shows the current version of shellchemy
+    $(color_cyan update)   Update shellchemy to the latest version (or to a specific <path>)
+    $(color_cyan version)  Show the current version of shellchemy
     $(color_cyan vsc)      Open shellchemy directory in Visual Studio Code and change directory
 EOF
 )"
-  elif [[ $1 == "cd" ]]; then
-    __shellchemy_cd;
-  elif [[ $1 == "release" ]]; then
-    __shellchemy_release;
-  elif [[ $1 == "restart" ]]; then
-    __shellchemy_restart;
-  elif [[ $1 == "update" ]]; then
-    __shellchemy_update;
-  elif [[ $1 == "version" || $1 == "--version" ]]; then
-    echo "$SHELLCHEMY_VERSION";
-  elif [[ $1 == "vsc" ]]; then
-    vsc "$SHELLCHEMY_PATH"; __shellchemy_cd;
-  else
-    print_error "`color_red $1` is not a shellchemy command. See `color_cyan "shellchemy help"`."
+}
+
+shellchemy() {
+  if [[ -z $1 ]]; then __shellchemy_commands_help_cmd;
+  elif [[ $1 == "cd" ]]; then __shellchemy_cd_cmd;
+  elif [[ $1 == "help" ]]; then __shellchemy_commands_help_cmd;
+  elif [[ $1 == "install" ]]; then __shellchemy_install_cmd $2;
+  elif [[ $1 == "release" ]]; then __shellchemy_release_cmd;
+  elif [[ $1 == "restart" ]]; then __shellchemy_restart_cmd;
+  elif [[ $1 == "update" ]]; then __shellchemy_update_cmd;
+  elif [[ $1 == "version" || $1 == "--version" ]]; then echo "$SHELLCHEMY_VERSION";
+  elif [[ $1 == "vsc" ]]; then vsc "$SHELLCHEMY_PATH"; __shellchemy_cd_cmd;
+  else print_error "`color_red $1` is not a shellchemy command. See `color_cyan "shellchemy help"`."
   fi
 }
 
-__shellchemy_cd() {
+__shellchemy_cd_cmd() {
   print_info "Changing directory to `color_cyan shellchemy`...";
   run_cmd "cd $SHELLCHEMY_PATH";
 }
 
-__shellchemy_release() {
+__shellchemy_install_cmd() {
+  has_parameters $@ || return 1;
+  local version_to_install="$1";
+  local install_dir="$2";
+
+  __validate_version_number "$version_to_install" || return 1;
+
+  if ! gh release view "v$version_to_install" --repo "$repo" &>/dev/null; then
+    print_error "Version '$version_to_install' does not exist"
+    return 1
+  fi
+
+  __install_specific_version "$version_to_install" "$install_dir" || return 1;
+}
+
+__shellchemy_release_cmd() {
   is_git_directory "$SHELLCHEMY_PATH" || return 1;
   cmd_exists gh || return 1;
 
@@ -112,37 +130,41 @@ __shellchemy_release() {
   print_ok "Release `color_cyan v$SHELLCHEMY_VERSION` created successfully!";
 }
 
-__shellchemy_restart() { 
+__shellchemy_restart_cmd() { 
   run_cmd ". $SHELLCHEMY_PATH/index";
 }
 
-__shellchemy_update() {
-  local install_dir="${1:-$SHELLCHEMY_PATH}";
-  if [[ $(is_git_directory "$install_dir") -eq 0 ]]; then
-    question_warning "`color_yellow $install_dir` is a git directory. Are you sure you want to continue?";
-    [[ $? != 0 ]] && { print_ok "Update cancelled."; return 1; }
-  fi
-
+__shellchemy_update_cmd() {
   print_info "Gettting latest version information from GitHub...";
   local release_json=$(run_cmd "curl -s $SHELLCHEMY_LATEST_RELEASE_URL");
-  local latest_version=$(echo "$release_json" | grep '"tag_name":' | cut -d '"' -f 4)
-  if [[ -z "$latest_version" ]]; then
+  local version_to_install=$(echo "$release_json" | grep '"tag_name":' | cut -d '"' -f 4)
+  if [[ -z "$version_to_install" ]]; then
     print_error "Could not find tag name with the latest version."
     return 1
   fi
-  if [[ "$latest_version" == "$SHELLCHEMY_VERSION" ]]; then
-    print_ok "shellchemy is already up-to-date (version `color_green $SHELLCHEMY_VERSION`)"
+ __install_specific_version "$version_to_install" "$1" || return 1;
+}
+
+__install_specific_version() {
+  local version_to_install="$1";
+  local install_dir="${2:-$SHELLCHEMY_PATH}";
+
+  if [[ "$version_to_install" == "$SHELLCHEMY_VERSION" ]]; then
+    print_ok "shellchemy is already at the version `color_green $SHELLCHEMY_VERSION`.";
     return 0
   fi
-  local zip_url=$(echo "$release_json" | grep "browser_download_url.*zip" | cut -d '"' -f 4);
-  if [[ -z "$zip_url" ]]; then
-    print_error "Could not find release download URL."
-    return 1
+
+  if [[ $(is_git_directory "$install_dir") -eq 0 ]]; then
+    question_warning "`color_yellow $install_dir` is a git directory. Are you sure you want to continue?";
+    [[ $? != 0 ]] && { print_ok "Action canceled."; return 1; }
   fi
 
-  # print_info "New version available: `color_green $latest_version` (current: `color_red $SHELLCHEMY_VERSION`)"
-  question "New version available: `color_green $latest_version` (current: `color_red $SHELLCHEMY_VERSION`). Do you want to continue?";
-  [[ $? != 0 ]] && { print_warning "Update cancelled."; return 1; }
+  return 0;
+
+  local zip_url="$SHELLCHEMY_RELEASES_URL/download/v$version_to_install/shellchemy.zip";
+
+  question "Do you want to install the version `color_green $version_to_install`? (current: `color_red $SHELLCHEMY_VERSION`)";
+  [[ $? != 0 ]] && { print_warning "Action canceled."; return 1; }
 
   # -d → create a directory (not a file).
   # XXXXXX → required pattern for mktemp; it gets replaced with random characters.
@@ -173,7 +195,7 @@ __shellchemy_update() {
   print_info "Removing temporary directory";
   run_cmd "rm -rf $tmp_dir"
 
-  __shellchemy_restart;
+  __shellchemy_restart_cmd;
 }
 
 __validate_version_number() {
