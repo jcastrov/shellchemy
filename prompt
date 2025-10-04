@@ -5,9 +5,9 @@ __get_ps1_current_path() { echo "%~"; }
 
 prompt_command() {
   local ps1_path="$(prompt_bg_white " $(__get_ps1_current_path) ")";
+  # Turn a Windows path into a Unix path if on Cygwin or Git Bash
   local git_root=$(
-    path=$(git rev-parse --show-toplevel 2>/dev/null) || exit 1 
-    # Turn a Windows path into a Unix path if on Cygwin or Git Bash 
+    path=$(git rev-parse --show-toplevel 2>/dev/null) || exit 1;
     if command -v cygpath >/dev/null 2>&1; then
       cygpath -u "$path"
     else
