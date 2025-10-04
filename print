@@ -38,6 +38,7 @@ bg_cyan() { printf "`__c "$1" 6 setab`"; }
 bg_white() { printf "`__c "$1" 7 setab`"; }
 underline() { echo "$1"; }
 
+print_format() { printf "$@\n"; }
 print_error() { printf "`color_red "▒"` $@\n"; }
 print_info() { printf "`color_blue "▒"` $@\n"; }
 print_ok() { printf "`color_green "▒"` $@\n"; }
@@ -83,7 +84,7 @@ print_cmd() {
   prompt_bg_cyan() { bg_cyan $@; }
   prompt_bg_white() { bg_white $@; }
 
-
+  print_format() { print -P "$@\n"; }
   print_error() { print -P "`color_red "▒"` $@"; }
   print_info() { print -P "`color_blue "▒"` $@"; }
   print_ok() { print -P "`color_green "▒"` $@"; }
