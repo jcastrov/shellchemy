@@ -52,10 +52,7 @@ __shellchemy_release() {
     return 1
   fi
 
-  if [[ ! $SHELLCHEMY_VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    print_error "\$SHELLCHEMY_VERSION variable must be in the format X.Y.Z (e.g., 1.2.3)";
-    return 1;
-  fi
+  __validate_version_number "$SHELLCHEMY_VERSION" || return 1;
 
   print_info "Checking for latest release..."
   local latest_version=$(run_cmd "curl -s $SHELLCHEMY_LATEST_RELEASE_URL | grep '\"tag_name\":' | cut -d '\"' -f 4 | sed 's/^v//'");
@@ -179,3 +176,10 @@ __shellchemy_update() {
   __shellchemy_restart;
 }
 
+__validate_version_number() {
+  if [[ ! $1 =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    print_error "Version number must be in the format X.Y.Z (e.g., 1.2.3)";
+    return 1;
+  fi
+  return 0;
+}
