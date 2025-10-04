@@ -26,7 +26,7 @@ SYSTEM_NAME=$(
     *)           echo "UNKNOWN:${unameOut}";;
   esac
 )
-
+source "$SHELLCHEMY_PATH/variables"
 source "$SHELLCHEMY_PATH/print"
 source "$SHELLCHEMY_PATH/git/utils"
 source "$SHELLCHEMY_PATH/git/git"
