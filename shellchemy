@@ -70,6 +70,9 @@ __shellchemy_release_cmd() {
     return 1
   fi
 
+  # Get the current version if it was updated without restarting Shellchemy
+  source "$SHELLCHEMY_PATH/variables";
+
   __validate_version_number "$SHELLCHEMY_VERSION" || return 1;
 
   print_info "Checking for latest release..."
@@ -148,6 +151,9 @@ __shellchemy_update_cmd() {
 __install_specific_version() {
   local version_to_install="$1";
   local install_dir="${2:-$SHELLCHEMY_PATH}";
+
+  # Get the current version if it was updated without restarting Shellchemy
+  source "$SHELLCHEMY_PATH/variables";
 
   if [[ "$version_to_install" == "$SHELLCHEMY_VERSION" ]]; then
     print_ok "shellchemy is already at the version `color_green $SHELLCHEMY_VERSION`.";
