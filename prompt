@@ -2,10 +2,12 @@
 
 prompt_command() {
   local ps1_path="$(prompt_bg_white " $(__get_ps1_current_path) ")";
-  local git_root=$(
-    path=$(git rev-parse --show-toplevel 2>/dev/null) || exit 1;
-    __normalize_path "$path"
-  );
+  local git_root="";
+  local raw_git_root=$(git rev-parse --show-toplevel 2>/dev/null);
+  if [[ -n $raw_git_root ]]; then
+    git_root=$(__normalize_path "$raw_git_root");
+  fi
+
   local branch=" ";
   if [[ -n $git_root ]]; then
     local repository="`basename $git_root`";
