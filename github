@@ -7,7 +7,7 @@ __prepate_branches() {
   local base_original_name=$3;
 
   if [[ $action == "pr" ]]; then
-    ebrew;
+    enable_brew;
     cmd_exists gh || return 1;
   fi
 

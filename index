@@ -61,7 +61,7 @@ cmd_exists() {
 }
 
 # Enables Brew on the current terminal session.
-ebrew() {
+enable_brew() {
   cmd_exists brew > /dev/null 2>&1 && return 1;
   print_info "Enabling `color_cyan brew`...";
   if [[ $SYSTEM_NAME == "Mac" ]]; then
@@ -85,7 +85,7 @@ ensure_nvm_is_enabled() {
 
 # Enables NVM on the current terminal session.
 enable_nvm() {
-  ebrew;
+  enable_brew;
   print_info "Enabling `color_cyan nvm`...";
   
   local nvm_path=$(brew --prefix nvm);
@@ -107,7 +107,7 @@ enable_nvm() {
 
 epython() {
   cmd_exists python > /dev/null 2>&1 && return 1;
-  ebrew;
+  enable_brew;
   print_info "Enabling `color_cyan python`...";
   export PYENV_ROOT="$HOME/.pyenv"
   command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
