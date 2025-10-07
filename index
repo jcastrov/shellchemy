@@ -146,10 +146,8 @@ fi
 # Prints and runs a command ($1).
 # (Optional) Assigns the output to a variable name without "$" ($2)
 run_cmd() {
-  # print command to stderr (so it’s visible outside)
-  print_cmd "$*" >&2;
-
-  eval "$@";
+  print_cmd "$@";
+  eval $@;
 
   return $?;
 }
