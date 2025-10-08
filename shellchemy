@@ -66,8 +66,8 @@ __shellchemy_release_cmd() {
 
   # Ensure no uncommitted changes
   if ! git diff-index --quiet HEAD --; then
-    print_error "Be sure to commit all your changes before creating a release.";
-    return 1
+    question_warning "Are your sure you want to create a release with uncommitted changes?";
+    [[ $? != 0 ]] && { print_ok "Release cancelled."; return 0; }
   fi
 
   # Get the current version if it was updated without restarting Shellchemy
@@ -76,7 +76,9 @@ __shellchemy_release_cmd() {
   __validate_version_number "$SHELLCHEMY_VERSION" || return 1;
 
   print_info "Checking for latest release..."
-  local latest_version=$(run_cmd "curl -s $SHELLCHEMY_LATEST_RELEASE_URL | grep '\"tag_name\":' | cut -d '\"' -f 4 | sed 's/^v//'");
+  local latest_version="curl -s \"\$SHELLCHEMY_LATEST_RELEASE_URL\" | grep '\"tag_name\":' | cut -d '\"' -f 4 | sed 's/^v//'";
+  print_cmd "$latest_version";
+  latest_version=$(eval $latest_version);
   if [[ -z "$latest_version" ]]; then
     print_error "Could not find tag name with the latest version."
     return 1
