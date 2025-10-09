@@ -3,6 +3,7 @@
 g1=""; is_from_main_repo=$([[ "$(get_repo_url $SHELLCHEMY_PATH)" == *"$SHELLCHEMY_REPO" ]] && echo 1 || echo 0)
 [[ $is_from_main_repo -eq 1 ]] && g1="[`color_yellow "git"`] "
 print_format "🧪 `color_green shellchemy` $SHELLCHEMY_VERSION $g1(`color_magenta $SYSTEM_NAME`)";
+print_format "🧪 `color_green shellchemy` $SHELLCHEMY_VERSION $g1(`color_magenta $SYSTEM_NAME`)";
 
 __shellchemy_commands_help_cmd() {
   print_info "$(cat <<EOF
