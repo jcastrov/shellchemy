@@ -38,7 +38,7 @@ bg_cyan() { printf "`__c "$1" 6 setab`"; }
 bg_white() { printf "`__c "$1" 7 setab`"; }
 underline() { echo "$1"; }
 
-print_format() { printf "$@\n"; }
+print_format() { printf "%s\n" "$@"; }
 print_error() { printf "`color_red "▒"` $@\n"; }
 print_info() { printf "`color_blue "▒"` $@\n"; }
 print_ok() { printf "`color_green "▒"` $@\n"; }
