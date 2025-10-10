@@ -2,23 +2,24 @@
 
 # Colors a string ($1) with a number ($2)
 __shellchemy_color() { printf "%s" "$(tput "$3" "${2:-7}")${1}$(tput sgr0)"; }
+__shellchemy_prompt_color() { echo "\[$(tput "$3" "${2:-7}")\]${1}\[$(tput sgr0)\]"; }
 
-prompt_fg_black() {   echo "\[$(tput setaf 0)\]${1}\[$(tput sgr0)\]"; }
-prompt_fg_red() {     echo "\[$(tput setaf 1)\]${1}\[$(tput sgr0)\]"; }
-prompt_fg_green() {   echo "\[$(tput setaf 2)\]${1}\[$(tput sgr0)\]"; }
-prompt_fg_yellow() {  echo "\[$(tput setaf 3)\]${1}\[$(tput sgr0)\]"; }
-prompt_fg_blue() {    echo "\[$(tput setaf 4)\]${1}\[$(tput sgr0)\]"; }
-prompt_fg_magenta() { echo "\[$(tput setaf 5)\]${1}\[$(tput sgr0)\]"; }
-prompt_fg_cyan() {    echo "\[$(tput setaf 6)\]${1}\[$(tput sgr0)\]"; }
-prompt_fg_gray() {    echo "\[$(tput setaf 7)\]${1}\[$(tput sgr0)\]"; }
-prompt_bg_black() {   echo "\[$(tput setaf 0)\]${1}\[$(tput sgr0)\]"; }
-prompt_bg_red() {     echo "\[$(tput setab 1)\]${1}\[$(tput sgr0)\]"; }
-prompt_bg_green() {   echo "\[$(tput setab 2)\]${1}\[$(tput sgr0)\]"; }
-prompt_bg_yellow() {  echo "\[$(tput setab 3)\]${1}\[$(tput sgr0)\]"; }
-prompt_bg_blue() {    echo "\[$(tput setab 4)\]${1}\[$(tput sgr0)\]"; }
-prompt_bg_magenta() { echo "\[$(tput setab 5)\]${1}\[$(tput sgr0)\]"; }
-prompt_bg_cyan() {    echo "\[$(tput setab 6)\]${1}\[$(tput sgr0)\]"; }
-prompt_bg_white() {   echo "\[$(tput setab 7)\]${1}\[$(tput sgr0)\]"; }
+prompt_fg_black()   { __shellchemy_prompt_color "${1}" 0 setaf; }
+prompt_fg_red()     { __shellchemy_prompt_color "${1}" 1 setaf; }
+prompt_fg_green()   { __shellchemy_prompt_color "${1}" 2 setaf; }
+prompt_fg_yellow()  { __shellchemy_prompt_color "${1}" 3 setaf; }
+prompt_fg_blue()    { __shellchemy_prompt_color "${1}" 4 setaf; }
+prompt_fg_magenta() { __shellchemy_prompt_color "${1}" 5 setaf; }
+prompt_fg_cyan()    { __shellchemy_prompt_color "${1}" 6 setaf; }
+prompt_fg_gray()    { __shellchemy_prompt_color "${1}" 7 setaf; }
+prompt_bg_black()   { __shellchemy_prompt_color "${1}" 0 setaf; }
+prompt_bg_red()     { __shellchemy_prompt_color "${1}" 1 setab; }
+prompt_bg_green()   { __shellchemy_prompt_color "${1}" 2 setab; }
+prompt_bg_yellow()  { __shellchemy_prompt_color "${1}" 3 setab; }
+prompt_bg_blue()    { __shellchemy_prompt_color "${1}" 4 setab; }
+prompt_bg_magenta() { __shellchemy_prompt_color "${1}" 5 setab; }
+prompt_bg_cyan()    { __shellchemy_prompt_color "${1}" 6 setab; }
+prompt_bg_white()   { __shellchemy_prompt_color "${1}" 7 setab; }
 
 color_black() {   __shellchemy_color "$1" 0 setaf; }
 color_red() {     __shellchemy_color "$1" 1 setaf; }
@@ -90,8 +91,6 @@ print_cmd() {
   print_warning() { print -P "`color_yellow "▒"` $@"; }
   print_cmd() { print -P `color_gray "  $ $(echo "$@" | awk '$1=$1')"`; }
 }
-
-
 
 __question() {
   local color_func="$1";
