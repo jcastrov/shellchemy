@@ -1,22 +1,13 @@
 #!/usr/bin/env bash
 
-# ============================================================
-# Universal color and printing helpers
-# ============================================================
+# Detect Zsh mode safely
+IS_ZSH=false
+[ -n "$ZSH_VERSION" ] && IS_ZSH=true
 
-# Force zsh into sh compatibility mode (only affects this file)
-[ -n "${ZSH_VERSION}" ] && emulate -L sh
+# Portable tput color wrapper
+__shellchemy_color() { printf "%s" "$(tput "$3" "${2:-7}")${1}$(tput sgr0)"; }
 
-# ------------------------------
-# Core color builder (tput-based)
-# ------------------------------
-__shellchemy_color() {
-  local start=$(tput "$3" "${2:-7}" | tr -d '\r')
-  local end=$(tput sgr0 | tr -d '\r')
-  printf '%s' "${start}${1}${end}"
-}
-
-# Foreground colors
+# ========== Bash Color Helpers ==========
 color_black()   { __shellchemy_color "$1" 0 setaf; }
 color_red()     { __shellchemy_color "$1" 1 setaf; }
 color_green()   { __shellchemy_color "$1" 2 setaf; }
@@ -26,7 +17,6 @@ color_magenta() { __shellchemy_color "$1" 5 setaf; }
 color_cyan()    { __shellchemy_color "$1" 6 setaf; }
 color_gray()    { __shellchemy_color "$1" 7 setaf; }
 
-# Background colors
 bg_black()      { __shellchemy_color "$1" 0 setab; }
 bg_red()        { __shellchemy_color "$1" 1 setab; }
 bg_green()      { __shellchemy_color "$1" 2 setab; }
@@ -36,90 +26,77 @@ bg_magenta()    { __shellchemy_color "$1" 5 setab; }
 bg_cyan()       { __shellchemy_color "$1" 6 setab; }
 bg_white()      { __shellchemy_color "$1" 7 setab; }
 
-# ------------------------------
-# Prompt-safe (non-printing)
-# ------------------------------
-prompt_fg_black()   { echo "\[$(tput setaf 0)\]${1}\[$(tput sgr0)\]"; }
-prompt_fg_red()     { echo "\[$(tput setaf 1)\]${1}\[$(tput sgr0)\]"; }
-prompt_fg_green()   { echo "\[$(tput setaf 2)\]${1}\[$(tput sgr0)\]"; }
-prompt_fg_yellow()  { echo "\[$(tput setaf 3)\]${1}\[$(tput sgr0)\]"; }
-prompt_fg_blue()    { echo "\[$(tput setaf 4)\]${1}\[$(tput sgr0)\]"; }
-prompt_fg_magenta() { echo "\[$(tput setaf 5)\]${1}\[$(tput sgr0)\]"; }
-prompt_fg_cyan()    { echo "\[$(tput setaf 6)\]${1}\[$(tput sgr0)\]"; }
-prompt_fg_gray()    { echo "\[$(tput setaf 7)\]${1}\[$(tput sgr0)\]"; }
+# Prompt-friendly wrappers (for PS1)
+prompt_fg() { echo "\[$(tput setaf "$1")\]${2}\[$(tput sgr0)\]"; }
+prompt_bg() { echo "\[$(tput setab "$1")\]${2}\[$(tput sgr0)\]"; }
 
-prompt_bg_black()   { echo "\[$(tput setab 0)\]${1}\[$(tput sgr0)\]"; }
-prompt_bg_red()     { echo "\[$(tput setab 1)\]${1}\[$(tput sgr0)\]"; }
-prompt_bg_green()   { echo "\[$(tput setab 2)\]${1}\[$(tput sgr0)\]"; }
-prompt_bg_yellow()  { echo "\[$(tput setab 3)\]${1}\[$(tput sgr0)\]"; }
-prompt_bg_blue()    { echo "\[$(tput setab 4)\]${1}\[$(tput sgr0)\]"; }
-prompt_bg_magenta() { echo "\[$(tput setab 5)\]${1}\[$(tput sgr0)\]"; }
-prompt_bg_cyan()    { echo "\[$(tput setab 6)\]${1}\[$(tput sgr0)\]"; }
-prompt_bg_white()   { echo "\[$(tput setab 7)\]${1}\[$(tput sgr0)\]"; }
+prompt_fg_black()   { prompt_fg 0 "$@"; }
+prompt_fg_red()     { prompt_fg 1 "$@"; }
+prompt_fg_green()   { prompt_fg 2 "$@"; }
+prompt_fg_yellow()  { prompt_fg 3 "$@"; }
+prompt_fg_blue()    { prompt_fg 4 "$@"; }
+prompt_fg_magenta() { prompt_fg 5 "$@"; }
+prompt_fg_cyan()    { prompt_fg 6 "$@"; }
+prompt_fg_gray()    { prompt_fg 7 "$@"; }
 
-underline()     { echo "${1}"; }
+prompt_bg_black()   { prompt_bg 0 "$@"; }
+prompt_bg_red()     { prompt_bg 1 "$@"; }
+prompt_bg_green()   { prompt_bg 2 "$@"; }
+prompt_bg_yellow()  { prompt_bg 3 "$@"; }
+prompt_bg_blue()    { prompt_bg 4 "$@"; }
+prompt_bg_magenta() { prompt_bg 5 "$@"; }
+prompt_bg_cyan()    { prompt_bg 6 "$@"; }
+prompt_bg_white()   { prompt_bg 7 "$@"; }
 
-# ------------------------------
-# Print helpers
-# ------------------------------
+# Printing utilities
 print_format()  { printf "%s\n" "$@"; }
-print_error()   { printf "%s %s\n" "$(color_red "▒")" "$*"; }
-print_info()    { printf "%s %s\n" "$(color_blue "▒")" "$*"; }
-print_ok()      { printf "%s %s\n" "$(color_green "▒")" "$*"; }
-print_warning() { printf "%s %s\n" "$(color_yellow "▒")" "$*"; }
-print_cmd()     {
-  # awk '$1=$1' trims extra spaces
-  printf "\033[1;30m▒ \$ %s%s\n" "$(echo "$*" | awk '$1=$1')" "$(tput sgr0)"
-}
+print_error()   { printf "%s %s\n" "$(color_red ▒)" "$@"; }
+print_info()    { printf "%s %s\n" "$(color_blue ▒)" "$@"; }
+print_ok()      { printf "%s %s\n" "$(color_green ▒)" "$@"; }
+print_warning() { printf "%s %s\n" "$(color_yellow ▒)" "$@"; }
+print_cmd()     { printf "\033[1;30m▒ $ %s%s\n" "$(echo "$@" | awk '$1=$1')" "$(tput sgr0)"; }
 
-# ============================================================
-# ZSH-specific overrides (only if running in ZSH)
-# ============================================================
-if [ -n "${ZSH_VERSION}" ]; then
-  color_black()   { echo "%F{black}${1}%f"; }
-  color_red()     { echo "%F{red}${1}%f"; }
-  color_green()   { echo "%F{green}${1}%f"; }
-  color_yellow()  { echo "%F{yellow}${1}%f"; }
-  color_blue()    { echo "%F{blue}${1}%f"; }
-  color_magenta() { echo "%F{magenta}${1}%f"; }
-  color_cyan()    { echo "%F{cyan}${1}%f"; }
-  color_gray()    { echo "%F{8}${1}%f"; }
+# ========== Zsh Overrides ==========
+if $IS_ZSH; then
+  color_black()   { print -P "%F{black}$1%f"; }
+  color_red()     { print -P "%F{red}$1%f"; }
+  color_green()   { print -P "%F{green}$1%f"; }
+  color_yellow()  { print -P "%F{yellow}$1%f"; }
+  color_blue()    { print -P "%F{blue}$1%f"; }
+  color_magenta() { print -P "%F{magenta}$1%f"; }
+  color_cyan()    { print -P "%F{cyan}$1%f"; }
+  color_gray()    { print -P "%F{8}$1%f"; }
 
-  bg_black()      { echo "%K{black}${1}%k"; }
-  bg_red()        { echo "%K{red}${1}%k"; }
-  bg_green()      { echo "%K{green}${1}%k"; }
-  bg_yellow()     { echo "%K{yellow}${1}%k"; }
-  bg_blue()       { echo "%K{blue}${1}%k"; }
-  bg_magenta()    { echo "%K{magenta}${1}%k"; }
-  bg_cyan()       { echo "%K{cyan}${1}%k"; }
-  bg_white()      { echo "%K{white}${1}%k"; }
+  bg_black()      { print -P "%K{black}$1%k"; }
+  bg_red()        { print -P "%K{red}$1%k"; }
+  bg_green()      { print -P "%K{green}$1%k"; }
+  bg_yellow()     { print -P "%K{yellow}$1%k"; }
+  bg_blue()       { print -P "%K{blue}$1%k"; }
+  bg_magenta()    { print -P "%K{magenta}$1%k"; }
+  bg_cyan()       { print -P "%K{cyan}$1%k"; }
+  bg_white()      { print -P "%K{white}$1%k"; }
 
-  underline()     { echo "%U${1}%u"; }
+  underline()     { print -P "%U${1}%u"; }
 
-  # Use zsh's print -P for prompt expansion
-  print_format()  { print -P -- "$@"; }
-  print_error()   { print -P -- "$(color_red "▒") $@"; }
-  print_info()    { print -P -- "$(color_blue "▒") $@"; }
-  print_ok()      { print -P -- "$(color_green "▒") $@"; }
-  print_warning() { print -P -- "$(color_yellow "▒") $@"; }
-  print_cmd()     { print -P -- "$(color_gray "  $ $(echo "$@" | awk '$1=$1')")"; }
+  print_format()  { print -P "$@\n"; }
+  print_error()   { print -P "$(color_red ▒) $@"; }
+  print_info()    { print -P "$(color_blue ▒) $@"; }
+  print_ok()      { print -P "$(color_green ▒) $@"; }
+  print_warning() { print -P "$(color_yellow ▒) $@"; }
+  print_cmd()     { print -P "$(color_gray "  $ $(echo "$@" | awk '$1=$1')")"; }
 fi
 
-# ============================================================
-# Interactive Question Helpers
-# ============================================================
+# ========== Interactive Questions ==========
 __question() {
-  local color_func="$1"
-  shift
-  local prompt_str
-  prompt_str="$("$color_func" "▒") $1 [y/$(color_cyan N)] "
+  local color_func="$1"; shift
+  local question_string="$($color_func ▒) $1 [y/$(color_cyan N)] "
 
-  local response
-  if [ -n "${ZSH_VERSION}" ]; then
-    print -nP -- "$prompt_str"
-    read "response?"
+  if $IS_ZSH; then
+    local response
+    print -nP "$question_string"
+    read response
   else
-    read -r -p "$prompt_str" response
+    read -r -p "$question_string" response
   fi
 
   [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
