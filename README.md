@@ -50,7 +50,7 @@ A utility library for running multiple commands efficiently in Z Shell and Bash 
 
 ## Optional: Extra Features
 
-To use advanced features like square icon generation or GitHub PR automation, install the following dependencies:
+To use advanced features like GitHub PR automation and square icon edition, install the following dependencies:
 
 ### ImageMagick (for Square Icon Generator)
 
@@ -61,24 +61,24 @@ To use advanced features like square icon generation or GitHub PR automation, in
 - **Ubuntu/Debian**:  
   ```bash
   sudo apt-get install imagemagick
-  ```
-- **Windows (WSL)**:  
-  ```bash
-  sudo apt-get install imagemagick
-  ```
+- **Windows**:  
+   ```bash
+   winget install ImageMagick.Q16-HDRI
+   ```
+   For other versions or more details, see the [ImageMagick download instructions](https://imagemagick.org/script/download.php).
 
 ### GitHub CLI (for PR Creation)
 
 - **macOS**:  
-  ```bash
-  brew install gh
-  ```
+   ```bash
+   brew install gh
+   ```
 - **Ubuntu/Debian**:  
-  ```bash
-  sudo apt-get install gh
-  ```
+   ```bash
+   sudo apt-get install gh
+   ```
 - **Windows**:  
-  Download from [GitHub CLI Releases](https://github.com/cli/cli/releases)
+   Download from the [GitHub CLI website](https://cli.github.com/)
 
 ---
 
