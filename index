@@ -28,8 +28,8 @@ SYSTEM_NAME=$(
 )
 source "$SHELLCHEMY_PATH/variables"
 source "$SHELLCHEMY_PATH/print"
-source "$SHELLCHEMY_PATH/git/utils"
-source "$SHELLCHEMY_PATH/git/git"
+source "$SHELLCHEMY_PATH/git_utils"
+source "$SHELLCHEMY_PATH/git"
 source "$SHELLCHEMY_PATH/github"
 source "$SHELLCHEMY_PATH/jira"
 source "$SHELLCHEMY_PATH/shellchemy"
