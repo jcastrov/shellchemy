@@ -8,13 +8,12 @@ A utility library for running multiple commands efficiently in Z Shell and Bash 
 - **Enhanced Prompt**: Customizable shell prompt (optional)
 - **Jira Integration**: Quick access to Jira tickets
 - **Node Version Management**: Seamless Node.js version switching with `cdnvm`
+- **Square Icon Generator**: Easily create a square icon using a single command
 - **Cross-shell Compatibility**: Works with both Z Shell and Bash
 
 ## Installation
 
-### Quick Install
-
-1. Navigate to your desired installation directory (we recommend `$HOME`):
+1. Navigate to your desired installation directory (Let's use `$HOME` for example):
    ```bash
    cd ~
    ```

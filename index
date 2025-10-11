@@ -34,7 +34,7 @@ source "$SHELLCHEMY_PATH/github"
 source "$SHELLCHEMY_PATH/jira"
 source "$SHELLCHEMY_PATH/shellchemy"
 source "$SHELLCHEMY_PATH/windows"
-
+source "$SHELLCHEMY_PATH/imagemagick"
 
 cdnvm() {
   run_cmd "cd "$1"";
@@ -155,6 +155,15 @@ run_cmd() {
   fi
 
   return $?;
+}
+
+validate_flag() {
+  local flag="$1"
+  local value="$2"
+  if [[ -z "$value" || "$value" == --* ]]; then
+    print_error "Missing value for $flag"
+    return 1
+  fi
 }
 
 # Opens VSCode for the current directory. If $1 is specified, VSCode opens for

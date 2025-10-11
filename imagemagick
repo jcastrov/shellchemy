@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+square_png() {
+  cmd_exists magick || return 1;
+  local input=""
+  local size=512
+  local bg_override=""
+  local manual_bg=""
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --size)
+        validate_flag "$1" "$2" || return 1
+        size="$2"; shift 2 ;;
+      --bg)
+        validate_flag "$1" "$2" || return 1
+        manual_bg="$2"; shift 2 ;;
+      *)
+        input="$1"; shift ;;
+    esac
+  done
+
+  if [[ -z "$input" ]]; then
+    print_error "Usage: square_png <image> [--size <number>] [--bg <color>]";
+    print_error "Example: square_png cat.png --size 256 --bg white";
+    return 1
+  fi
+
+  if [[ ! -f "$input" ]]; then
+    print_error "File not found: $input"
+    return 1
+  fi
+
+  local output="${input%.*}-edited.png"
+  local ext="${input##*.}";
+  local color="none";
+
+  
+  if [[ -n "$manual_bg" ]]; then
+    color="$manual_bg"
+    print_warning "Background color manually set to: $color"
+  elif [[ "${ext,,}" == "svg" ]]; then
+    # SVG files → transparent background
+    print_info "SVG detected — using transparent background"
+  else
+    # Extract top-left pixel color
+    color=$(magick "${input}[1x1+0+0]" -format "%[pixel:p{0,0}]" info:)
+    print_info "Background color detected: $color"
+  fi
+
+  magick "$input" \
+    -gravity center \
+    -background "$color" \
+    -extent "$(magick identify -format '%[fx:max(w,h)]x%[fx:max(w,h)]' "$input")" \
+    -resize "${size}x${size}>" \
+    "$output"
+
+  local abs_output=$(realpath "$output" 2>/dev/null || echo "$(pwd)/$output");
+  print_ok "Saved: $abs_output";
+}
