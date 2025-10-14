@@ -26,6 +26,10 @@ square_png() {
     return 1
   fi
 
+  # Expand tilde (~) and normalize path
+  eval input="$input"  # expands ~ and variables
+  input=$(realpath "$input" 2>/dev/null || echo "$input")
+
   if [[ ! -f "$input" ]]; then
     print_error "File not found: $input"
     return 1
@@ -35,11 +39,12 @@ square_png() {
   local ext="${input##*.}";
   local color="none";
 
+  local ext_lc=$(echo "$ext" | tr '[:upper:]' '[:lower:]')
   
   if [[ -n "$manual_bg" ]]; then
     color="$manual_bg"
     print_warning "Background color manually set to: $color"
-  elif [[ "${ext,,}" == "svg" ]]; then
+  elif [[ "$ext_lc" == "svg" ]]; then
     # SVG files → transparent background
     print_info "SVG detected — using transparent background"
   else
