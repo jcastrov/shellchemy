@@ -250,6 +250,10 @@ gitshu() { run_cmd "git stash --include-untracked \"$1\""; }
 gitst() { run_cmd "git status"; }
 gitsts() { run_cmd "git status -s"; }
 
+gitsubu() { run_cmd "git submodule update $@"; }
+gitsubui() { run_cmd "git submodule update --init $@"; }
+gitsubuir() { run_cmd "git submodule update --init --recursive $@"; }
+
 # Switches or creates a branch from the current branch. Branch $1 will be
 # created from $2 instead, if $2 is specified and $1 doesn't exist.
 #     $1: Branch to switch or create
