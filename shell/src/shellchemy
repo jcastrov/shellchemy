@@ -67,13 +67,13 @@ __shellchemy_release_cmd() {
   fi
 
   # Ensure no uncommitted changes
-  if ! git diff-index --quiet HEAD --; then
+  if ! git -C "$SHELLCHEMY_PATH" diff-index --quiet HEAD --; then
     question_warning "Are your sure you want to create a release with uncommitted changes?";
     [[ $? != 0 ]] && { print_ok "Release cancelled."; return 0; }
   fi
 
   # Get the current version if it was updated without restarting Shellchemy
-  source "$SHELLCHEMY_PATH/variables";
+  source "$SHELLCHEMY_PATH/shell/src/variables";
 
   __validate_version_number "$SHELLCHEMY_VERSION" || return 1;
 
@@ -139,7 +139,7 @@ __shellchemy_release_cmd() {
 }
 
 shellchemy_restart() { 
-  run_cmd ". $SHELLCHEMY_PATH/index";
+  run_cmd ". $SHELLCHEMY_PATH/shell/index";
 }
 
 __shellchemy_update_cmd() {

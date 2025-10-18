@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 # Scripts path depends on the current shell.
-SHELLCHEMY_PATH=$(dirname "${BASH_SOURCE[0]}");
+SHELLCHEMY_PATH=$(dirname "${BASH_SOURCE[0]}")
 if [[ -n $ZSH_VERSION ]]; then SHELLCHEMY_PATH=${0:A:h}; fi
+SHELLCHEMY_PATH="${SHELLCHEMY_PATH%/shell}"
 
 echo_regex_substring() {
   local substring=$(echo "$1" | grep -oE "$2");
@@ -26,15 +27,15 @@ SYSTEM_NAME=$(
     *)           echo "UNKNOWN:${unameOut}";;
   esac
 )
-source "$SHELLCHEMY_PATH/src/variables"
-source "$SHELLCHEMY_PATH/src/print"
-source "$SHELLCHEMY_PATH/src/git_utils"
-source "$SHELLCHEMY_PATH/src/git"
-source "$SHELLCHEMY_PATH/src/github"
-source "$SHELLCHEMY_PATH/src/jira"
-source "$SHELLCHEMY_PATH/src/shellchemy"
-source "$SHELLCHEMY_PATH/src/windows"
-source "$SHELLCHEMY_PATH/src/imagemagick"
+source "$SHELLCHEMY_PATH/shell/src/variables"
+source "$SHELLCHEMY_PATH/shell/src/print"
+source "$SHELLCHEMY_PATH/shell/src/git_utils"
+source "$SHELLCHEMY_PATH/shell/src/git"
+source "$SHELLCHEMY_PATH/shell/src/github"
+source "$SHELLCHEMY_PATH/shell/src/jira"
+source "$SHELLCHEMY_PATH/shell/src/shellchemy"
+source "$SHELLCHEMY_PATH/shell/src/windows"
+source "$SHELLCHEMY_PATH/shell/src/imagemagick"
 
 cdnvm() {
   run_cmd "cd "$1"";
