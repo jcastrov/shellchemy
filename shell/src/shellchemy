@@ -60,6 +60,11 @@ __shellchemy_release_cmd() {
   is_git_directory "$SHELLCHEMY_PATH" || return 1;
   cmd_exists gh || return 1;
 
+  if [[ "$(pwd)" != "$SHELLCHEMY_PATH" ]]; then
+    print_error "You must be in the shellchemy directory ($SHELLCHEMY_PATH) to create a release.";
+    return 1;
+  fi
+
   local gh_auth_status=$(gh auth status 2>&1);
   if [[ $gh_auth_status =~ ^"You are not logged" ]]; then
     print_error "$gh_auth_status";
@@ -67,7 +72,7 @@ __shellchemy_release_cmd() {
   fi
 
   # Ensure no uncommitted changes
-  if ! git -C "$SHELLCHEMY_PATH" diff-index --quiet HEAD --; then
+  if ! git diff-index --quiet HEAD --; then
     question_warning "Are your sure you want to create a release with uncommitted changes?";
     [[ $? != 0 ]] && { print_ok "Release cancelled."; return 0; }
   fi
@@ -78,7 +83,7 @@ __shellchemy_release_cmd() {
   __validate_version_number "$SHELLCHEMY_VERSION" || return 1;
 
   print_info "Checking for latest release..."
-  local latest_version="curl -s \"\$SHELLCHEMY_LATEST_RELEASE_URL\" | grep '\"tag_name\":' | cut -d '\"' -f 4 | sed 's/^v//'";
+  local latest_version="curl -s \"$SHELLCHEMY_LATEST_RELEASE_URL\" | grep '\"tag_name\":' | cut -d '\"' -f 4 | sed 's/^v//'";
   print_cmd "$latest_version";
   latest_version=$(eval $latest_version);
   if [[ -z "$latest_version" ]]; then
