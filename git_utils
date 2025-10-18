@@ -98,19 +98,44 @@ get_api_repo_url() {
 }
 
 # Gets the URL of the repository.
+# Usage: get_repo_url [path]
+# If path is provided, attempt to get the remote origin URL for that repository.
+# If path is omitted, use current working directory.
+# Prints normalized HTTPS URL without trailing .git.
+# Returns 0 on success, 1 on failure.
 get_repo_url() {
-  local url=$(git remote get-url origin 2>/dev/null)
+  local repo_path="$1";
+  [ -z "$repo_path" ] && repo_path=".";
+
+  # Validate path exists
+  if [ ! -d "$repo_path" ]; then
+    echo "Path does not exist: $repo_path";
+    return 1;
+  fi
+
+  # Use git -C to run inside the provided path (safer than subshell cd)
+  local url=$(git -C "$repo_path" remote get-url origin 2>/dev/null);
   if [ -z "$url" ]; then
-    echo "Not a git repository or no remote origin"
-    return 1
+    echo "Not a git repository or no remote origin: $repo_path";
+    return 1;
   fi
-  
-  # Convert SSH URL to HTTPS if needed
+
+  # Convert SSH URL (git@host:owner/repo.git) to HTTPS (https://host/owner/repo.git)
   if [[ $url == git@* ]]; then
-    url=${url/git@/https://}
-    url=${url/:/\/}
+    url=${url/git@/https://};
+    url=${url/:/\/};
   fi
-  
-  # Remove .git suffix
-  echo ${url%.git}
+
+  # Convert scp-like SSH URL without git@ prefix (e.g., user@host:owner/repo.git)
+  if [[ $url =~ ^[A-Za-z0-9._-]+@[A-Za-z0-9._-]+:.*$ ]]; then
+    local host_part=$(echo "$url" | cut -d':' -f1 | cut -d'@' -f2);
+    local path_part=$(echo "$url" | cut -d':' -f2-);
+    url="https://$host_part/$path_part";
+  fi
+
+  # Remove .git suffix if present
+  url="${url%.git}";
+
+  echo "$url";
+  return 0;
 }
