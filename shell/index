@@ -1,0 +1,181 @@
+#!/usr/bin/env bash
+
+# Scripts path depends on the current shell.
+SHELLCHEMY_PATH=$(dirname "${BASH_SOURCE[0]}");
+if [[ -n $ZSH_VERSION ]]; then SHELLCHEMY_PATH=${0:A:h}; fi
+
+echo_regex_substring() {
+  local substring=$(echo "$1" | grep -oE "$2");
+  [ -z $substring ] && { return 1; }
+  echo "$substring";
+}
+
+# There are different ways to get the name of the system or the OS. The implemented
+# one is https://github.com/microsoft/WSL/issues/4071#issuecomment-1223393940
+# Another approach is https://stackoverflow.com/a/17072017/1054579
+SYSTEM_NAME=$(
+  unameOut=$(uname -a)
+  case "$unameOut" in
+    *Microsoft*) echo "WSL";;
+    *microsoft*) echo "WSL2";;
+    Linux*)      echo "Linux";;
+    Darwin*)     echo "Mac";;
+    CYGWIN*)     echo "Cygwin";;
+    MINGW*)      echo "Windows";;
+    *Msys)       echo "Windows";;
+    *)           echo "UNKNOWN:${unameOut}";;
+  esac
+)
+source "$SHELLCHEMY_PATH/src/variables"
+source "$SHELLCHEMY_PATH/src/print"
+source "$SHELLCHEMY_PATH/src/git_utils"
+source "$SHELLCHEMY_PATH/src/git"
+source "$SHELLCHEMY_PATH/src/github"
+source "$SHELLCHEMY_PATH/src/jira"
+source "$SHELLCHEMY_PATH/src/shellchemy"
+source "$SHELLCHEMY_PATH/src/windows"
+source "$SHELLCHEMY_PATH/src/imagemagick"
+
+cdnvm() {
+  run_cmd "cd "$1"";
+  
+  if ! is_nvm_enabled; then
+    question "Do you want to enable NVM?";
+    [[ $? == 0 ]] && enable_nvm || { return 1; }
+  fi
+ 
+  if is_nvm_enabled && [[ $(node --version) != "v$2"* ]]; then
+    print_info "Changing node version to `color_cyan $2`"
+    run_cmd "nvm use $2";
+  fi
+}
+
+# Checks if a command is avaiable in your current session. Returns 0 if
+# the command is found. Otherwise, shows an error message and returns 1.
+#     $1: Command.
+cmd_exists() {
+  if ! command -v $1 &> /dev/null; then 
+    print_error "`color_cyan $1` command not found.";
+    return 1;
+  fi
+}
+
+# Enables Brew on the current terminal session.
+enable_brew() {
+  cmd_exists brew > /dev/null 2>&1 && return 1;
+  print_info "Enabling `color_cyan brew`...";
+  if [[ $SYSTEM_NAME == "Mac" ]]; then
+    run_cmd "$(/opt/homebrew/bin/brew shellenv)";
+  else
+    run_cmd "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)";
+  fi
+  run_cmd "brew --version";
+}
+
+is_nvm_enabled() {
+  cmd_exists nvm > /dev/null 2>&1 && return 0;
+  return 1;
+}
+
+ensure_nvm_is_enabled() {
+  if ! is_nvm_enabled; then
+    enable_nvm;
+  fi
+}
+
+# Enables NVM on the current terminal session.
+enable_nvm() {
+  enable_brew;
+  print_info "Enabling `color_cyan nvm`...";
+  
+  local nvm_path=$(brew --prefix nvm);
+  if [[ -z $nvm_path ]]; then
+    print_error "`color_cyan nvm` was not installed with brew.";
+    return 1;
+  fi
+
+  run_cmd "export NVM_DIR=~/.nvm";
+
+   # This loads nvm
+  run_cmd "source $nvm_path/nvm.sh";
+
+   # This loads nvm bash_completion
+  run_cmd "source $nvm_path/etc/bash_completion.d/nvm";
+
+  run_cmd "node --version";
+}
+
+epython() {
+  cmd_exists python > /dev/null 2>&1 && return 1;
+  enable_brew;
+  print_info "Enabling `color_cyan python`...";
+  export PYENV_ROOT="$HOME/.pyenv"
+  command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init -)"
+  pyenv global 2;
+  run_cmd "which python";
+  run_cmd "python --version";
+}
+
+# Checks if a function has parameters. Returns 0 if there are paramters. 
+# Otherwise returns 1.
+#     $@: Parameters
+has_parameters() {
+  if [ $# -eq 0 ]; then
+    print_error "Missing parameters."; 
+    return 1;
+  fi
+  return 0;
+}
+
+hide_output() {
+  "$@" > /dev/null 2>&1;
+  return $?;
+}
+
+
+open_url() { print_error "Unsupported system to open URL: `color_yellow $SYSTEM_NAME`."; return 1; }
+if [[ $SYSTEM_NAME == "Mac" ]]; then
+  open_url() { run_cmd "open $1"; }
+elif [[ $SYSTEM_NAME == "Windows" || $SYSTEM_NAME == "Cygwin" || $SYSTEM_NAME == "MINGW" || $SYSTEM_NAME == "Msys" ]]; then
+  open_url() { run_cmd "start $1"; }
+elif [[ $SYSTEM_NAME == "WSL" || $SYSTEM_NAME == "WSL2" ]]; then
+  open_url() { run_cmd "wslview $1"; }
+fi
+
+# Prints and runs a command ($1).
+# (Optional) Assigns the output to a variable name without "$" ($2)
+run_cmd() {
+  print_cmd "$@";
+  if [[ $# == 1 ]]; then
+    # "eval" runs commands with pipes: https://stackoverflow.com/a/48098280/1054579
+    eval $1;
+  else
+    eval "$2=\"$(eval $1)\""
+  fi
+
+  return $?;
+}
+
+validate_flag() {
+  local flag="$1"
+  local value="$2"
+  if [[ -z "$value" || "$value" == --* ]]; then
+    print_error "Missing value for $flag"
+    return 1
+  fi
+}
+
+# Opens VSCode for the current directory. If $1 is specified, VSCode opens for
+# the root of the git repository, or that path.
+vsc() {
+  local vsc_path="${1:-.}";
+  local type="directory";
+  is_git_directory "$vsc_path" > /dev/null 2>&1 && {
+    vsc_path=$(cd $vsc_path; echo `git rev-parse --show-toplevel`;) 
+    type=`color_magenta "repository"`;
+  }
+  local directory="$(basename "`cd "$vsc_path"; pwd`")";
+  print_info "Opening `color_cyan "$directory"` $type on VSCode.";
+  run_cmd "code \"$vsc_path\"";
+}

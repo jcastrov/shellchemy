@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+
+__prepate_branches() {
+  local action=$1;
+  local head=$2;
+  local base=$3;
+  local base_original_name=$3;
+
+  if [[ $action == "pr" ]]; then
+    enable_brew;
+    cmd_exists gh || return 1;
+  fi
+
+  if [[ $# == 2 ]]; then
+    head=$(echo_current_branch);
+    base=$2;
+    base_original_name=$2;
+  fi
+  gitf;
+  if [[ $head == "Release" ]]; then
+    get_latest_release_branch "head";
+  else
+    branch_on_remote_exists $head || return 1;
+  fi
+
+  if [[ $base == "Release" ]]; then
+    get_latest_release_branch "base";
+  else
+    branch_on_remote_exists $base || return 1;
+  fi
+
+  if [[ $action == "compare" ]]; then
+    print_ok "Comparing branch `color_cyan $head` with branch `color_cyan $base`";
+    open_url "`get_repo_url`/compare/$base...$head";
+    return 0;
+  fi
+
+  local title="[$base_original_name] $head";
+  # if [[ -n $2 ]]; then
+  #   title="$title: $2";
+  # fi
+
+  item() { echo "\n   `color_cyan $1:` ${!1}"; }
+  [ ${ZSH_VERSION} ] && item() { echo "\n   `color_cyan $1:` ${(P)1}"; }
+  print_info "Pull Request details: `item base``item head``item title`";
+  question "Do you want to continue?";
+  if [[ $? == 0 ]]; then
+    print_info "Creating Pull Request on GitHub";
+    run_cmd "gh pr create --base $base --head $head --title \"$title\" --draft";
+  fi
+}
+
+# Compares the source branch (Current branch) with the destination branch ($1)
+# on the repo URL. If $2 is specified, $2 will be the source branch instead.
+#     $1: Destination branch
+#     $2 (Optional): Source branch
+ghcompare() { 
+  is_git_directory && has_parameters $@ || return 1;
+  __prepate_branches "compare" $@;
+}
+
+ghopen() {
+  is_git_directory || return 1;
+  local repo_url=$(get_repo_url);
+  local current_branch=$1;
+  [[ $# -ge 1 ]] && {
+    [[ $1 == "." ]] && current_branch=$(echo_current_branch);
+    repo_url="$(get_repo_url)/tree/$current_branch";
+  }
+  [[ $# -ge 2 ]] && {
+    local file=$2;
+    local git_root=$(git rev-parse --show-toplevel 2>/dev/null);
+    local remaining_path=${PWD#"$git_root"};
+    [[ $file == "." ]] && file="";
+    repo_url="$(get_repo_url)/blob/${current_branch}${remaining_path}/$file";
+  }
+  [[ $# -ge 3 ]] && {
+    local line=$3;
+    [[ $line == "." ]] && line=1;
+    [[ $line =~ ^[0-9]+$ ]] || { print_error "Line number must be a number"; return 1; }
+    [[ $line -lt 1 ]] && { print_error "Line number must be greater than 0"; return 1; }
+    [[ $line -gt 100000 ]] && { print_error "Line number must be less than 100000"; return 1; }
+    repo_url="$repo_url#L$line";
+  }
+  open_url $repo_url;
+}
+
+ghprc() {
+  is_git_directory && has_parameters $@ || return 1;
+  __prepate_branches "pr" $@;
+}
+
+
+# Searches for pull requests on the repo URL, where the source branch is the
+# current branch. If #1 is specified, $1 will be the search text.
+#     $1 (Optional): Search text
+ghprf() {
+  is_git_directory || return 1;
+  local search_text=$1;
+  [ -z "$1" ] && { 
+    get_current_branch current_branch;
+    search_text="head:$current_branch";
+  }
+  open_url "`get_repo_url`/pulls?q=$search_text"
+}

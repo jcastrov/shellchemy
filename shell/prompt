@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+prompt_command() {
+  local ps1_path="$(prompt_bg_white " $(__get_ps1_current_path) ")";
+  local git_root="";
+  local raw_git_root=$(git rev-parse --show-toplevel 2>/dev/null);
+  if [[ -n $raw_git_root ]]; then
+    git_root=$(__normalize_path "$raw_git_root");
+  fi
+
+  local branch=" ";
+  if [[ -n $git_root ]]; then
+    local repository="`basename $git_root`";
+    local remaining_path=${PWD#"$git_root"};
+    if [[ -z $remaining_path ]]; then 
+      ps1_path="$(prompt_bg_blue " $repository ")"; 
+    else
+      local remaining_path_color=$(prompt_bg_white "$(prompt_fg_black "$remaining_path ")");
+      ps1_path="$(prompt_bg_blue " $repository ")$(prompt_bg_white " $remaining_path_color")";
+    fi
+
+    local current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null);
+    branch=" $(prompt_fg_yellow "$current_branch") "
+    if git diff --quiet HEAD -- 2>/dev/null; then
+      branch=" $(prompt_fg_green "$current_branch") "
+    fi
+  fi
+  PS1="$(prompt_fg_black "$ps1_path")$branch`prompt_fg_magenta \$` ";
+}
+
+# Hooks for Bash & Zsh
+[ ${BASH_VERSION} ] && PROMPT_COMMAND=prompt_command;
+[ ${ZSH_VERSION} ] && precmd() { prompt_command; }
+
+
+__get_ps1_current_path() { echo "%~"; }
+[ ${BASH_VERSION} ] && __get_ps1_current_path() { echo "\w"; }
+
+__normalize_path() { echo "$1"; }
+if command -v cygpath >/dev/null 2>&1; then
+  # Turn a Windows path into a Unix path if on Cygwin or Git Bash
+  __normalize_path() { cygpath -u "$1"; }
+fi
