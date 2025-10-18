@@ -235,10 +235,6 @@ gitrt() {
 # Revert command
 gitrv() { run_cmd "git revert $@"; }
 
-# Status commands
-gits() { run_cmd "git status"; }
-gitss() { run_cmd "git status -s"; }
-
 # Stash commands
 gitsh() { run_cmd "git stash $@"; }
 gitsha() { run_cmd "git stash apply"; }
@@ -249,6 +245,10 @@ gitshl() { run_cmd "git stash list"; }
 gitshp() { run_cmd "git stash pop"; }
 gitshps() { run_cmd "git stash save \"$1\""; }
 gitshu() { run_cmd "git stash --include-untracked \"$1\""; }
+
+# Status commands
+gitst() { run_cmd "git status"; }
+gitsts() { run_cmd "git status -s"; }
 
 # Switches or creates a branch from the current branch. Branch $1 will be
 # created from $2 instead, if $2 is specified and $1 doesn't exist.
