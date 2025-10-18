@@ -136,8 +136,9 @@ gitof() {
 }
 
 # Pull commands
-gitpl() { run_cmd "git pull"; }
-gitplr() { run_cmd "git pull -r"; }
+gitpl() { run_cmd "git pull $@"; }
+gitplr() { run_cmd "git pull -r $@"; }
+gitplrs() { run_cmd "git pull --recurse-submodules $@"; } 
 
 # Pushes a branch
 gitps() { 
