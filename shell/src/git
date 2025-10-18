@@ -6,6 +6,10 @@ gita() {
   run_cmd "git add $@";
   run_cmd "git status -s"
 }
+gitaa() {
+  run_cmd "git add --all $@";
+  run_cmd "git status -s"
+}
 gitaf() { gita "--force $@"; }
 
 # Deletes a branch locally
