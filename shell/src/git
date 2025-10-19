@@ -22,11 +22,11 @@ gitbD() {
   [ $? != 0 ] && return 0;
 
   if [[ $current_branch == $branch_to_delete ]]; then
-    get_main_branch "main_branch";
+    local main_branch="$(get_main_branch)";
     print_info "Switching to `color_cyan $main_branch` branch";
     run_cmd "$git_switch $main_branch";
   fi
-  print_ok "Deleting branch `color_red $branch_to_delete` branch..."
+  print_info "Deleting `color_red $branch_to_delete` branch..."
   run_cmd "git branch -D $branch_to_delete";
 }
 
@@ -255,8 +255,15 @@ gitst() { run_cmd "git status"; }
 gitsts() { run_cmd "git status -s"; }
 
 gitsubu() { run_cmd "git submodule update $@"; }
+
+# Initializes and updates submodules
 gitsubui() { run_cmd "git submodule update --init $@"; }
+
+# Initializes and updates submodules recursively
 gitsubuir() { run_cmd "git submodule update --init --recursive $@"; }
+
+# Updates submodules to the latest commit on their remote tracking branch
+gitsuburr() { run_cmd "git submodule update --remote --rebase $@"; }
 
 # Switches or creates a branch from the current branch. Branch $1 will be
 # created from $2 instead, if $2 is specified and $1 doesn't exist.
@@ -355,7 +362,7 @@ gitsync() {
 
   local sync_branch=${current_branch}-${target_branch};
   local switch_cmd="$git_switch_c $sync_branch origin/$target_branch";
-  get_main_branch "main_branch";
+  local main_branch=$(get_main_branch);
   
   if [[ $2 == "cherry-pick" ]]; then
     local base_branch="main";
