@@ -30,7 +30,7 @@ __prepate_branches() {
   fi
 
   if [[ $action == "compare" ]]; then
-    print_ok "Comparing branch `color_cyan $head` with branch `color_cyan $base`";
+    print_ok "Comparing `color_cyan $head` with `color_cyan $base`";
     open_url "`get_repo_url`/compare/$base...$head";
     return 0;
   fi
@@ -57,6 +57,13 @@ __prepate_branches() {
 ghcompare() { 
   is_git_directory && has_parameters $@ || return 1;
   __prepate_branches "compare" $@;
+}
+
+ghcomparelatestrelease() {
+  is_git_directory || return 1;
+  local cmd="git fetch --tags && git describe --tags `git rev-list --tags --max-count=1`";
+  run_cmd "$cmd" "latest_release_tag";
+  open_url "`get_repo_url`/compare/$latest_release_tag...$(echo_current_branch)";
 }
 
 ghopen() {

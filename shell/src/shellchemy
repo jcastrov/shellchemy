@@ -125,10 +125,12 @@ __shellchemy_release_cmd() {
 
   local changelog_line="**Full Changelog**: https://github.com/$SHELLCHEMY_REPO/compare/v$latest_version...v$SHELLCHEMY_VERSION"
   if [[ ! -f $notes_file ]]; then
-    print_warning "Release notes file for version $SHELLCHEMY_VERSION not found at `color_cyan $notes_file`.";
-    question_warning "Do you want to create an default release notes file?";
+    print_warning "Release notes file for version `color_cyan $SHELLCHEMY_VERSION` not found at $notes_file.";
+    question "Do you want to create an empty release notes file?";
     [[ $? != 0 ]] && { print_ok "Release cancelled."; return 0; }
     touch "$notes_file";
+    question_warning "Do you want to continue the release with the default changelog entry?";
+    [[ $? != 0 ]] && { print_ok "Release cancelled."; return 0; }
     printf "%s\n" "$changelog_line" >> "$notes_file"
   fi
 
