@@ -59,6 +59,7 @@ __shellchemy_install_cmd() {
 __shellchemy_release_cmd() {
   is_git_directory "$SHELLCHEMY_PATH" || return 1;
   cmd_exists gh || return 1;
+  local notes_file="$SHELLCHEMY_PATH/.github/versions/$SHELLCHEMY_VERSION.md";
 
   if [[ "$(pwd)" != "$SHELLCHEMY_PATH" ]]; then
     print_error "You must be in the shellchemy directory ($SHELLCHEMY_PATH) to create a release.";
@@ -122,6 +123,20 @@ __shellchemy_release_cmd() {
     [[ $? != 0 ]] && { print_ok "Release cancelled."; return 0; }
   fi
 
+  local changelog_line="**Full Changelog**: https://github.com/$SHELLCHEMY_REPO/compare/v$latest_version...v$SHELLCHEMY_VERSION"
+  if [[ ! -f $notes_file ]]; then
+    print_warning "Release notes file for version $SHELLCHEMY_VERSION not found at `color_cyan $notes_file`.";
+    question_warning "Do you want to create an default release notes file?";
+    [[ $? != 0 ]] && { print_ok "Release cancelled."; return 0; }
+    touch "$notes_file";
+    printf "%s\n" "$changelog_line" >> "$notes_file"
+  fi
+
+  # Append full changelog link to the release notes if not already present at the end
+  if [[ "$(tail -1 "$notes_file")" != "$changelog_line" ]]; then
+    printf "\n\n%s\n" "$changelog_line" >> "$notes_file"
+  fi
+
   local tmp_dir=$(mktemp -d -t "shellchemy-release-XXXX");
   local tmp_zip="$tmp_dir/shellchemy.zip";
 
@@ -131,7 +146,7 @@ __shellchemy_release_cmd() {
   print_info "Creating GitHub release v$SHELLCHEMY_VERSION..."
   cmd=(gh release create "v$SHELLCHEMY_VERSION" "$tmp_zip" \
      --title "Shellchemy $SHELLCHEMY_VERSION" \
-     --notes-file "$SHELLCHEMY_PATH/VERSION-NOTES.md")
+     --notes-file "$SHELLCHEMY_PATH/.github/versions/$SHELLCHEMY_VERSION.md")
   print_cmd "${cmd[@]}";
   if ! "${cmd[@]}"; then
     print_error "Failed to create release v$SHELLCHEMY_VERSION";

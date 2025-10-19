@@ -1,1 +1,2 @@
-VERSION-NOTES.md
+.github/versions/**
+!.github/versions/README.md
