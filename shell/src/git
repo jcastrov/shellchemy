@@ -62,18 +62,58 @@ gitchpc() { run_cmd "git cherry-pick --continue"; }
 gitcl() {
   has_parameters $@ || return 1;
   run_cmd "git clone $@";
-  local directory_name=${2:-$(basename "${1%.git}")};
-  if [[ -f "$directory_name/.gitmodules" ]]; then
+  local git_repo_path=${2:-$(basename "${1%.git}")};
+  if [[ -f "$git_repo_path/.gitmodules" ]]; then
     question "A `color_magenta .gitmodules` file was found. Do you want to download all submodules?";
     if [[ $? == 0 ]]; then
-      run_cmd "git -C \"$directory_name\" submodule update --init --recursive";
+      print_info "Initializing and updating submodules...";
+      run_cmd "git -C \"$git_repo_path\" submodule update --init --recursive";
+
+      print_info "Updating each submodule to the latest commit on their remote tracking branch...";
+      local get_submodules_cmd="git -C \"$git_repo_path\" config --file .gitmodules --get-regexp path | awk '{ print \$2 }'";
+      print_cmd "$get_submodules_cmd";
+      local submodules=$(eval "$get_submodules_cmd");
+
+      for submodule in $submodules; do
+        update_single_submodule "$git_repo_path" "$submodule";
+      done
     fi
   fi
 
-  question "Do you want to enter in `color_cyan $directory_name` directory?";
+  question "Do you want to enter in `color_cyan $git_repo_path` directory?";
   if [[ $? == 0 ]]; then
-    cd "$directory_name";
+    cd "$git_repo_path";
   fi  
+}
+
+
+# This function runs *inside each submodule*
+update_single_submodule() {
+  local git_repo_path="$1";
+  local submodule="$2";
+
+  # Try to get branch from parent .gitmodules
+  local branch=$(git -C "$git_repo_path" config -f ".gitmodules" "submodule.$submodule.branch")
+
+  # If not defined, get default remote branch (origin/HEAD)
+  if [[ -z "$branch" ]]; then
+    branch=$(get_main_branch)
+  fi
+
+  # Fallback if still empty
+  if [[ -z "$branch" ]]; then
+    print_warning "Could not determine default branch for submodule $submodule. Using 'main' as fallback.";
+    branch="main"
+  fi
+
+  print_info "Updating submodule to latest commit on `color_cyan $branch` branch...";
+  
+  # Checkout or create local branch tracking origin/$branch
+  run_cmd "git -C \"$git_repo_path/$submodule\" fetch origin \"$branch\""
+  run_cmd "git -C \"$git_repo_path/$submodule\" switch \"$branch\""
+
+  # Pull latest commits
+  run_cmd "git -C \"$git_repo_path/$submodule\" pull --rebase origin \"$branch\""
 }
 
 # Fetches branches
