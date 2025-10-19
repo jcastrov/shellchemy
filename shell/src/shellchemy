@@ -57,6 +57,9 @@ __shellchemy_install_cmd() {
 }
 
 __shellchemy_release_cmd() {
+  # Get the current version if it was updated without restarting Shellchemy
+  source "$SHELLCHEMY_PATH/shell/src/variables";
+
   is_git_directory "$SHELLCHEMY_PATH" || return 1;
   cmd_exists gh || return 1;
   local notes_file="$SHELLCHEMY_PATH/.github/versions/$SHELLCHEMY_VERSION.md";
@@ -77,9 +80,6 @@ __shellchemy_release_cmd() {
     question_warning "Are your sure you want to create a release with uncommitted changes?";
     [[ $? != 0 ]] && { print_ok "Release cancelled."; return 0; }
   fi
-
-  # Get the current version if it was updated without restarting Shellchemy
-  source "$SHELLCHEMY_PATH/shell/src/variables";
 
   __validate_version_number "$SHELLCHEMY_VERSION" || return 1;
 
