@@ -134,6 +134,46 @@ hide_output() {
   return $?;
 }
 
+mdlink() {
+  if [ -z "$1" ]; then
+    print_error "Usage: mdlink <URL>"
+    return 1
+  fi
+
+  url="$1"
+
+  # Fetch HTML and extract title (case-insensitive, allows spaces)
+  title=$(curl -Ls "$url" | tr -d '\n' | sed -E 's/.*<[Tt][Ii][Tt][Ll][Ee][^>]*>([^<]*)<\/[Tt][Ii][Tt][Ll][Ee]>.*/\1/' | head -n 1)
+
+  # Clean and trim
+  title=$(echo "$title" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+  if [ -z "$title" ]; then
+    print_error "Could not extract title from URL: $url"
+    return 1;
+  fi
+
+  md="[${title}](${url})"
+  echo "$md"
+
+  # Copy to clipboard
+  if command -v pbcopy &>/dev/null; then
+    echo -n "$md" | pbcopy
+    print_ok "Copied to clipboard (macOS)"
+  elif command -v xclip &>/dev/null; then
+    echo -n "$md" | xclip -selection clipboard
+    print_ok "Copied to clipboard (Linux/xclip)"
+  elif command -v clip &>/dev/null; then
+    echo -n "$md" | clip
+    print_ok "Copied to clipboard (Windows/Git Bash)"
+  else
+    print_warning "Clipboard tool not found. Install pbcopy, xclip, xsel, or use 'clip' on Windows."
+  fi
+}
+
+
+
+
 
 open_url() { print_error "Unsupported system to open URL: `color_yellow $SYSTEM_NAME`."; return 1; }
 if [[ $SYSTEM_NAME == "Mac" ]]; then
