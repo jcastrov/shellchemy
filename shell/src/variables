@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SHELLCHEMY_VERSION="1.5.0";
+SHELLCHEMY_VERSION="1.6.0";
 SHELLCHEMY_REPO="jcastrov/shellchemy";
 SHELLCHEMY_RELEASES_URL="https://api.github.com/repos/$SHELLCHEMY_REPO/releases";
 SHELLCHEMY_LATEST_RELEASE_URL="$SHELLCHEMY_RELEASES_URL/latest";
