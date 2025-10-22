@@ -140,12 +140,20 @@ mdlink() {
     return 1
   fi
 
-  url="$1"
+  local url="$*"
 
-  # Fetch HTML and extract title (case-insensitive, allows spaces)
-  title=$(curl -Ls "$url" | tr -d '\n' | sed -E 's/.*<[Tt][Ii][Tt][Ll][Ee][^>]*>([^<]*)<\/[Tt][Ii][Tt][Ll][Ee]>.*/\1/' | head -n 1)
+  # Fetch HTML, extract <title> (case-insensitive, no newlines)
+  local title=$(curl -Ls "$url" | tr -d '\n' | sed -E 's/.*<[Tt][Ii][Tt][Ll][Ee][^>]*>([^<]*)<\/[Tt][Ii][Tt][Ll][Ee]>.*/\1/' | head -n 1)
 
-  # Clean and trim
+  # Decode common HTML entities if perl is available
+  if command -v perl &>/dev/null; then
+    title=$(echo "$title" | perl -MHTML::Entities -pe 'decode_entities($_)')
+  else
+    # Basic fallback replacements
+    title=$(echo "$title" | sed -e "s/&quot;/\"/g" -e "s/&#39;/'/g" -e "s/&amp;/\&/g" -e "s/&lt;/</g" -e "s/&gt;/>/g")
+  fi
+
+  # Clean whitespace
   title=$(echo "$title" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
   if [ -z "$title" ]; then
