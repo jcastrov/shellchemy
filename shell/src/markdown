@@ -12,10 +12,23 @@ mdlink() {
   # Fetch HTML (follow redirects, silent)
   local html=$(curl -Ls "$url")
 
-  # Extract title
-  local title=$(echo "$html" | tr -d '\n' |
-          sed -E 's/.*<[Tt][Ii][Tt][Ll][Ee][^>]*>([^<]*)<\/[Tt][Ii][Tt][Ll][Ee]>.*/\1/' |
-          head -n 1)
+  # Try to extract title safely
+  local title=""
+  if echo "$html" | grep -qi "<title"; then
+    title=$(echo "$html" | tr -d '\n' |
+      sed -nE 's/.*<[Tt][Ii][Tt][Ll][Ee][^>]*>([^<]*)<\/[Tt][Ii][Tt][Ll][Ee]>.*/\1/p' |
+      head -n 1)
+  fi
+
+  # Fallback: use og:title (YouTube often includes this)
+  if [ -z "$title" ]; then
+    title=$(echo "$html" | grep -oP '(?<=<meta property="og:title" content=").*?(?=")' | head -n 1)
+  fi
+
+  # Fallback 2: use JSON title in ytInitialPlayerResponse
+  if [ -z "$title" ]; then
+    title=$(echo "$html" | grep -oP '"title":"(.*?)"' | head -n 1 | sed 's/^"title":"//; s/"$//')
+  fi
 
   # Decode basic HTML entities
   if command -v perl &>/dev/null; then
