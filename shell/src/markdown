@@ -15,8 +15,8 @@ mdlink() {
   # Try to extract title safely
   local title=""
   if echo "$html" | grep -qi "<title"; then
-    title=$(echo "$html" | tr -d '\n' |
-      sed -nE 's/.*<[Tt][Ii][Tt][Ll][Ee][^>]*>([^<]*)<\/[Tt][Ii][Tt][Ll][Ee]>.*/\1/p' |
+    title=$(echo "$html" | tr -d '\n' | \
+      sed -nE 's/.*<[Hh][Ee][Aa][Dd][^>]*>.*<[Tt][Ii][Tt][Ll][Ee][^>]*>([^<]*)<\/[Tt][Ii][Tt][Ll][Ee]>.*<\/[Hh][Ee][Aa][Dd]>.*$/\1/p' | \
       head -n 1)
   fi
 
