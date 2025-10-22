@@ -40,12 +40,15 @@ mdlink() {
   title=$(echo "$title" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
   # Check if it's a YouTube link
-  if [[ "$url" =~ youtube\.com|youtu\.be ]]; then
+  # if [[ "$url" =~ youtube\.com|youtu\.be ]]; then
+  if echo "$url" | grep -Eq 'youtube\.com|youtu\.be'; then
     # Try new format first
-    author=$(echo "$html" | grep -oP '(?<=<link itemprop="name" content=").*?(?=")')
+    # author=$(echo "$html" | grep -oP '(?<=<link itemprop="name" content=").*?(?=")')
+    author=$(echo "$html" | grep -Eo '<link itemprop="name" content="[^"]+"' | sed -E 's/.*content="([^"]+)".*/\1/')
     # Fallback to old format
     if [ -z "$author" ]; then
-      author=$(echo "$html" | grep -oP '(?<=<meta name="author" content=").*?(?=")')
+      # author=$(echo "$html" | grep -oP '(?<=<meta name="author" content=").*?(?=")')
+      author=$(echo "$html" | grep -Eo '<meta name="author" content="[^"]+"' | sed -E 's/.*content="([^"]+)".*/\1/')
     fi
 
     # Clean YouTube suffix in title
