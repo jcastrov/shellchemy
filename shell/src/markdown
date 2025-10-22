@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+
+mdlink() {
+  if [ -z "$1" ]; then
+    print_error "Usage: mdlink <URL>"
+    return 1
+  fi
+
+  local raw_url=$(printf "%s " "$@" | sed 's/ $//')
+  local url=$(echo "$raw_url" | sed 's/\([^\\]\)&/\1\\\&/g')
+
+  # Fetch HTML (follow redirects, silent)
+  local html=$(curl -Ls "$url")
+
+  # Extract title
+  local title=$(echo "$html" | tr -d '\n' |
+          sed -E 's/.*<[Tt][Ii][Tt][Ll][Ee][^>]*>([^<]*)<\/[Tt][Ii][Tt][Ll][Ee]>.*/\1/' |
+          head -n 1)
+
+  # Decode basic HTML entities
+  if command -v perl &>/dev/null; then
+    title=$(echo "$title" | perl -MHTML::Entities -pe 'decode_entities($_)')
+  else
+    title=$(echo "$title" | sed -e "s/&quot;/\"/g" -e "s/&#39;/'/g" -e "s/&amp;/\&/g" \
+                                -e "s/&lt;/</g"  -e "s/&gt;/>/g")
+  fi
+  title=$(echo "$title" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+  # Check if it's a YouTube link
+  if [[ "$url" =~ youtube\.com|youtu\.be ]]; then
+    # Try new format first
+    author=$(echo "$html" | grep -oP '(?<=<link itemprop="name" content=").*?(?=")')
+    # Fallback to old format
+    if [ -z "$author" ]; then
+      author=$(echo "$html" | grep -oP '(?<=<meta name="author" content=").*?(?=")')
+    fi
+
+    # Clean YouTube suffix in title
+    title=$(echo "$title" | sed 's/ - YouTube$//')
+
+    if [ -n "$author" ]; then
+      md="[YouTube / ${author}: ${title}](${raw_url})"
+    else
+      md="[YouTube: ${title}](${raw_url})"
+    fi
+  else
+    md="[${title}](${raw_url})"
+  fi
+  echo "$md"
+
+  # Copy to clipboard
+  if command -v pbcopy &>/dev/null; then
+    echo -n "$md" | pbcopy
+    print_ok "Copied to clipboard"
+  elif command -v xclip &>/dev/null; then
+    echo -n "$md" | xclip -selection clipboard
+    print_ok "Copied to clipboard"
+  elif command -v clip &>/dev/null; then
+    echo -n "$md" | clip
+    print_ok "Copied to clipboard"
+  else
+    print_warning "Clipboard tool not found. Install pbcopy, xclip, xsel, or use 'clip' on Windows."
+  fi
+}
