@@ -41,7 +41,7 @@ bg_white() {      __shellchemy_color "$1" 7 setab; }
 print_format() { printf "%s\n" "$@"; }
 print_error() { printf "`color_red "▒"` $@\n"; }
 print_info() { printf "`color_blue "▒"` $@\n"; }
-print_ok() { printf "`color_green "▒"` $@\n"; }
+print_success() { printf "`color_green "▒"` $@\n"; }
 print_warning() { printf "`color_yellow "▒"` $@\n"; }
 print_cmd() { 
   # awk $1=$1 removes extra spaces
@@ -87,7 +87,7 @@ print_cmd() {
   print_format() { print -P "$@"; }
   print_error() { print -P "`color_red "▒"` $@"; }
   print_info() { print -P "`color_blue "▒"` $@"; }
-  print_ok() { print -P "`color_green "▒"` $@"; }
+  print_success() { print -P "`color_green "▒"` $@"; }
   print_warning() { print -P "`color_yellow "▒"` $@"; }
   print_cmd() { print -P `color_gray "  $ $(echo "$@" | awk '$1=$1')"`; }
 }

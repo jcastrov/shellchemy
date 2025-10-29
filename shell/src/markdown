@@ -67,13 +67,13 @@ mdlink() {
   # Copy to clipboard
   if command -v pbcopy &>/dev/null; then
     echo -n "$md" | pbcopy
-    print_ok "Copied to clipboard"
+    print_success "Copied to clipboard"
   elif command -v xclip &>/dev/null; then
     echo -n "$md" | xclip -selection clipboard
-    print_ok "Copied to clipboard"
+    print_success "Copied to clipboard"
   elif command -v clip &>/dev/null; then
     echo -n "$md" | clip
-    print_ok "Copied to clipboard"
+    print_success "Copied to clipboard"
   else
     print_warning "Clipboard tool not found. Install pbcopy, xclip, xsel, or use 'clip' on Windows."
   fi

@@ -30,7 +30,7 @@ __prepate_branches() {
   fi
 
   if [[ $action == "compare" ]]; then
-    print_ok "Comparing `color_cyan $head` with `color_cyan $base`";
+    print_success "Comparing `color_cyan $head` with `color_cyan $base`";
     open_url "`get_repo_url`/compare/$base...$head";
     return 0;
   fi

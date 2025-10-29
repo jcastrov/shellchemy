@@ -78,7 +78,7 @@ __shellchemy_release_cmd() {
   # Ensure no uncommitted changes
   if ! git diff-index --quiet HEAD --; then
     question_warning "Are your sure you want to create a release with uncommitted changes?";
-    [[ $? != 0 ]] && { print_ok "Release cancelled."; return 0; }
+    [[ $? != 0 ]] && { print_success "Release cancelled."; return 0; }
   fi
 
   __validate_version_number "$SHELLCHEMY_VERSION" || return 1;
@@ -120,17 +120,17 @@ __shellchemy_release_cmd() {
   ); then
     print_warning "Invalid version bump:\n    - Latest version released: `color_green $latest_version`\n    - Version to release: `color_red $SHELLCHEMY_VERSION`."
     question_warning "Do you want to continue?";
-    [[ $? != 0 ]] && { print_ok "Release cancelled."; return 0; }
+    [[ $? != 0 ]] && { print_success "Release cancelled."; return 0; }
   fi
 
   local changelog_line="**Full Changelog**: https://github.com/$SHELLCHEMY_REPO/compare/v$latest_version...v$SHELLCHEMY_VERSION"
   if [[ ! -f $notes_file ]]; then
     print_warning "Release notes file for version `color_cyan $SHELLCHEMY_VERSION` not found at $notes_file.";
     question "Do you want to create an empty release notes file?";
-    [[ $? != 0 ]] && { print_ok "Release cancelled."; return 0; }
+    [[ $? != 0 ]] && { print_success "Release cancelled."; return 0; }
     touch "$notes_file";
     question_warning "Do you want to continue the release with the default changelog entry?";
-    [[ $? != 0 ]] && { print_ok "Release cancelled."; return 0; }
+    [[ $? != 0 ]] && { print_success "Release cancelled."; return 0; }
     printf "%s\n" "$changelog_line" >> "$notes_file"
   fi
 
@@ -157,7 +157,7 @@ __shellchemy_release_cmd() {
   fi
   rm -rf $tmp_dir;
 
-  print_ok "Release `color_cyan v$SHELLCHEMY_VERSION` created successfully!";
+  print_success "Release `color_cyan v$SHELLCHEMY_VERSION` created successfully!";
 }
 
 shellchemy_restart() { 
@@ -188,13 +188,13 @@ __install_specific_version() {
   source "$SHELLCHEMY_PATH/variables";
 
   if [[ "$version_to_install" == "$SHELLCHEMY_VERSION" ]]; then
-    print_ok "shellchemy is already at the version `color_green $SHELLCHEMY_VERSION`.";
+    print_success "shellchemy is already at the version `color_green $SHELLCHEMY_VERSION`.";
     return 0
   fi
 
   if [[ $(is_git_directory "$install_dir") -eq 0 ]]; then
     question_warning "`color_yellow $install_dir` is a git directory. Are you sure you want to continue?";
-    [[ $? != 0 ]] && { print_ok "Action canceled."; return 1; }
+    [[ $? != 0 ]] && { print_success "Action canceled."; return 1; }
   fi
 
   return 0;

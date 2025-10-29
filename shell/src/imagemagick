@@ -14,7 +14,7 @@ img_fill() {
 
   magick "$input" -background "$color" -alpha remove -alpha off "$output"
 
-  print_ok "Saved: $output";
+  print_success "Saved: $output";
 }
 
 img_square() {
@@ -78,5 +78,5 @@ img_square() {
     "$output"
 
   local abs_output=$(realpath "$output" 2>/dev/null || echo "$(pwd)/$output");
-  print_ok "Saved: $abs_output";
+  print_success "Saved: $abs_output";
 }
