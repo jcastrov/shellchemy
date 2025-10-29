@@ -1,5 +1,22 @@
 #!/usr/bin/env bash
 
+img_fill() {
+  cmd_exists magick || return 1;
+
+  if [ -z "$1" ]; then
+    echo "Usage: img_fill <image> [color]"
+    return 1
+  fi
+
+  local input="$1"
+  local output="${input%.*}_filled.${input##*.}"
+  local color="${2:-white}"
+
+  magick "$input" -background "$color" -alpha remove -alpha off "$output"
+
+  print_ok "Saved: $output";
+}
+
 img_square() {
   cmd_exists magick || return 1;
   local input=""
