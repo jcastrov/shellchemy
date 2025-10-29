@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-square_png() {
+img_square() {
   cmd_exists magick || return 1;
   local input=""
   local size=512
