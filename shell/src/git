@@ -233,8 +233,17 @@ gitrsho() { run_cmd "git reset --hard origin/$1"; }
 gitrt() {
   [[ $1 != "." ]] && run_cmd "$git_restore $@" && return 0;
   question "Are you sure to restore all your modified files?"
-  [[ $? == 0 ]] && run_cmd "$git_restore_f";
+  [[ $? != 0 ]] && return 0;
+  run_cmd "$git_restore $@"
+
+  # List untracked files
+  untracked_files=$(git ls-files --others --exclude-standard)
+  [[ -z "$untracked_files" ]] && return 0;
+  question "Do you also want to delete these untracked files?"
+  [[ $? != 0 ]] && return 0;
+  run_cmd "git clean -f -d"
 }
+
 
 # Revert command
 gitrv() { run_cmd "git revert $@"; }
