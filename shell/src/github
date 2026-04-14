@@ -110,3 +110,34 @@ ghprf() {
   }
   open_url "`get_repo_url`/pulls?q=$search_text"
 }
+
+# Checks if the Pull Request with the specified number exists on GitHub, and if it does, checks it out locally.
+#     $1: Pull Request number
+ghprchk() {
+  is_git_directory || return 1;
+  local pr_number=$1;
+  local user_confirmed=false;
+  [[ $pr_number =~ ^[0-9]+$ ]] || { print_error "Pull Request number must be a number"; return 1; }
+  [[ $pr_number -lt 1 ]] && { print_error "Pull Request number must be greater than 0"; return 1; }
+  [[ $pr_number -gt 100000 ]] && { print_error "Pull Request number must be less than 100000"; return 1; }
+  
+  print_info "Verifying if Pull Request `color_cyan "#$pr_number"` exists...";
+  local pr_info=$(GH_FORCE_TTY=100% gh pr view $pr_number --json title,author,additions,deletions --template "{{.title}}\n{{color \"magenta\" .author.login}} • {{color \"green\" \"+\"}}{{color \"green\" .additions}} {{color \"red\" \"-\"}}{{color \"red\" .deletions}}\n")
+  echo -e "$pr_info"
+  [[ $pr_info =~ "^GraphQL: Could not resolve to a PullRequest" ]] && { print_error "Pull Request `color_cyan "#$pr_number"` not found"; return 1; }
+
+  if ! git diff --quiet HEAD -- 2>/dev/null; then
+    question_warning "You have uncommitted changes. Do you want to checkout the Pull Request anyway?";
+    [[ $? != 0 ]] && return 1;
+    user_confirmed=true;
+  fi
+
+  if [[ $user_confirmed == false ]]; then
+    question "Do you want to checkout Pull Request `color_cyan "#$pr_number"`?";
+    [[ $? != 0 ]] && return 1;
+  fi
+
+  gitrsh;
+  print_info "Checking out Pull Request `color_cyan "#$pr_number"`...";
+  run_cmd "gh pr checkout $pr_number";
+}
