@@ -107,7 +107,16 @@ enable_nvm() {
   run_cmd "node --version";
 }
 
-epython() {
+enable_pnpm() {
+  export PNPM_HOME="/Users/`whoami`/Library/pnpm"
+  case ":$PATH:" in
+    *":$PNPM_HOME/bin:"*) ;;
+    *) export PATH="$PNPM_HOME/bin:$PATH" ;;
+  esac
+  run_cmd "pnpm --version";
+}
+
+enable_python() {
   cmd_exists python > /dev/null 2>&1 && return 1;
   enable_brew;
   print_info "Enabling `color_cyan python`...";
