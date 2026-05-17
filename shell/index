@@ -87,6 +87,17 @@ ensure_nvm_is_enabled() {
 
 # Enables NVM on the current terminal session.
 enable_nvm() {
+  # Run these commands to enable nvm if it was installed with the default installation script.
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+  if is_nvm_enabled; then
+    run_cmd "node --version";
+    return 0;
+  fi
+
+  # Run these commands to enable nvm if it was installed with Brew.
   enable_brew;
   print_info "Enabling `color_cyan nvm`...";
   
