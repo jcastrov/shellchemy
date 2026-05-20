@@ -40,7 +40,9 @@ source "$SHELLCHEMY_PATH/shell/src/markdown"
 
 cdnvm() {
   run_cmd "cd "$1"";
-  
+  if [[ $? != 0 ]]; then
+    return 1;
+  fi
   if ! is_nvm_enabled; then
     question "Do you want to enable NVM?";
     [[ $? == 0 ]] && enable_nvm || { return 1; }
