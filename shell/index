@@ -44,7 +44,9 @@ cdnvm() {
     return 1;
   fi
   if ! is_nvm_enabled; then
-    question "Do you want to enable NVM?";
+    local nvm_question="Do you want to enable NVM?"
+    [[ -n "$2" ]] && nvm_question="Do you want to enable NVM with Node `color_cyan $2`?"
+    question "$nvm_question";
     [[ $? == 0 ]] && enable_nvm || { return 1; }
   fi
  
