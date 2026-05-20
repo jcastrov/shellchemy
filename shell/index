@@ -52,7 +52,11 @@ cdnvm() {
  
   if is_nvm_enabled && [[ $(node --version) != "v$2"* ]]; then
     print_info "Changing node version to `color_cyan $2`"
-    run_cmd "nvm use $2";
+    run_cmd "nvm use $2 > /dev/null 2>&1";
+    if [[ $? != 0 ]]; then
+      question "Node `color_cyan $2` is not installed. Do you want to install it?";
+      [[ $? == 0 ]] && run_cmd "nvm install $2" || { return 1; }
+    fi
   fi
 }
 
