@@ -223,6 +223,9 @@ gitrbio() { gitrbi origin/$1; }
 gitrbq() { gitrb --quit; }
 gitrbs() { gitrb --skip; }
 
+# Remove commands
+gitrmignore() { run_cmd "git rm -r --cached $@"; }
+
 # Reset commands
 gitrsm() { run_cmd "git reset --merge"; }
 gitrs() { run_cmd "git reset $@"; }
