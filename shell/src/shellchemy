@@ -23,16 +23,16 @@ EOF
 }
 
 shellchemy() {
-  if [[ -z $1 ]]; then __shellchemy_commands_help_cmd;
-  elif [[ $1 == "cd" ]]; then shellchemy_cd;
-  elif [[ $1 == "help" ]]; then __shellchemy_commands_help_cmd;
-  elif [[ $1 == "install" ]]; then __shellchemy_install_cmd $2;
-  elif [[ $1 == "release" ]]; then __shellchemy_release_cmd;
-  elif [[ $1 == "restart" ]]; then shellchemy_restart;
-  elif [[ $1 == "update" ]]; then __shellchemy_update_cmd;
-  elif [[ $1 == "version" || $1 == "--version" ]]; then echo "$SHELLCHEMY_VERSION";
-  elif [[ $1 == "vsc" ]]; then shellchemy_vsc;
-  else print_error "`color_red $1` is not a shellchemy command. See `color_cyan "shellchemy help"`."
+  if [[ -z ${1:-} ]]; then __shellchemy_commands_help_cmd;
+  elif [[ ${1:-} == "cd" ]]; then shellchemy_cd;
+  elif [[ ${1:-} == "help" ]]; then __shellchemy_commands_help_cmd;
+  elif [[ ${1:-} == "install" ]]; then __shellchemy_install_cmd "${2:-}";
+  elif [[ ${1:-} == "release" ]]; then __shellchemy_release_cmd;
+  elif [[ ${1:-} == "restart" ]]; then shellchemy_restart;
+  elif [[ ${1:-} == "update" ]]; then __shellchemy_update_cmd;
+  elif [[ ${1:-} == "version" || ${1:-} == "--version" ]]; then echo "$SHELLCHEMY_VERSION";
+  elif [[ ${1:-} == "vsc" ]]; then shellchemy_vsc;
+  else print_error "`color_red ${1:-}` is not a shellchemy command. See `color_cyan "shellchemy help"`."
   fi
 }
 
@@ -44,7 +44,7 @@ shellchemy_cd() {
 __shellchemy_install_cmd() {
   has_parameters $@ || return 1;
   local version_to_install="$1";
-  local install_dir="$2";
+  local install_dir="${2:-}";
 
   __validate_version_number "$version_to_install" || return 1;
 
@@ -172,7 +172,7 @@ __shellchemy_update_cmd() {
     print_error "Could not find tag name with the latest version."
     return 1
   fi
- __install_specific_version "$version_to_install" "$1" || return 1;
+ __install_specific_version "$version_to_install" "${1:-}" || return 1;
 }
 
 shellchemy_vsc() {

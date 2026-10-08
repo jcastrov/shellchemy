@@ -15,7 +15,7 @@ gitaf() { gita "--force $@"; }
 # Deletes a branch locally
 gitbD() {
   local current_branch=$(echo_current_branch);
-  local branch_to_delete=$1;
+  local branch_to_delete=${1:-};
   [[ $# == 0 ]] && branch_to_delete=$current_branch;
   branch_locally_exists $branch_to_delete || return 1;
   question "Are you sure to force delete `color_red $branch_to_delete` branch locally?"
@@ -121,9 +121,9 @@ gitmo() { gitm origin/$@; }
 #     $1 (optional): Branch name
 #     $2 (optional): Relative path of the file
 gito() {
-  is_git_directory && local branch=$1 || return 1;
-  [ -z "$1" ] && get_current_branch branch;
-  [ -n "$2" ] && { gitof $2 $1; return 0; }
+  is_git_directory && local branch=${1:-} || return 1;
+  [ -z "${1:-}" ] && get_current_branch branch;
+  [ -n "${2:-}" ] && { gitof "$2" "${1:-}"; return 0; }
   print_info "Opening `color_cyan $branch` on remote...";
   open_url "`get_repo_url`/tree/$branch";
 }
@@ -133,8 +133,8 @@ gito() {
 #     $1: Relative path of the file
 #     $2 (Optional): Branch name 
 gitof() {
-  is_git_directory && has_parameters $@ && local branch=$2 || return 1;
-  [ -z "$2" ] && get_current_branch branch;
+  is_git_directory && has_parameters $@ && local branch=${2:-} || return 1;
+  [ -z "${2:-}" ] && get_current_branch branch;
   print_info "Opening file in `color_cyan $branch` on remote...";
   open_url "`get_repo_url`/blob/$branch/$1";
 }
@@ -170,7 +170,7 @@ gitps() {
 #     $1: Branch name
 gitpsd() {
   is_git_directory || return 1;
-  local branch_to_delete=$1;
+  local branch_to_delete=${1:-};
   if [[ $# == 0 ]]; then
     branch_to_delete=$(echo_current_branch);
   else
@@ -234,7 +234,7 @@ gitrsho() { run_cmd "git reset --hard origin/$1"; }
 
 # Restore command
 gitrt() {
-  [[ $1 != "." ]] && run_cmd "$git_restore $@" && return 0;
+  [[ ${1:-} != "." ]] && run_cmd "$git_restore $@" && return 0;
   question "Are you sure to restore all your modified files?"
   [[ $? != 0 ]] && return 0;
   run_cmd "$git_restore $@"
@@ -254,13 +254,13 @@ gitrv() { run_cmd "git revert $@"; }
 # Stash commands
 gitsh() { run_cmd "git stash $@"; }
 gitsha() { run_cmd "git stash apply"; }
-gitshas() { run_cmd "git stash apply stash@{\"$1\"}"; }
+gitshas() { run_cmd "git stash apply stash@{\"${1:-}\"}"; }
 gitshcl() { run_cmd "git stash clear"; }
 gitshiu() { run_cmd "git stash --include-untracked"; }
 gitshl() { run_cmd "git stash list"; }
 gitshp() { run_cmd "git stash pop"; }
-gitshps() { run_cmd "git stash save \"$1\""; }
-gitshu() { run_cmd "git stash --include-untracked \"$1\""; }
+gitshps() { run_cmd "git stash save \"${1:-}\""; }
+gitshu() { run_cmd "git stash --include-untracked \"${1:-}\""; }
 
 # Status commands
 gitst() { run_cmd "git status"; }
@@ -316,7 +316,9 @@ gitsw() {
   }
 
   if [[ $start_point =~ ^origin/ ]]; then
-    ! branch_on_remote_exists ${2#"origin/"} && return 1;
+    local remote_start_point="${2:-}";
+    remote_start_point="${remote_start_point#origin/}";
+    ! branch_on_remote_exists "$remote_start_point" && return 1;
   else
     question "Do you want to create `color_green $branch_to_switch` branch from local $(color_red $start_point)?";
     [[ $? == 0 ]] && {
@@ -340,7 +342,7 @@ gitswC() { run_cmd "git switch -C $@"; }
 
 gitsync() {
   local current_branch=$(echo_current_branch);
-  local target_branch=$1;
+  local target_branch=${1:-};
 
   # Sync should not be done from qa, develop or staging branches.
   if [[ $current_branch =~ ^(qa|develop|dev|staging)$ ]]; then
@@ -362,7 +364,7 @@ gitsync() {
   fi
 
   # Get the latest Release branch if the parameter is "Release"
-  if [[ $1 == "Release" ]]; then
+  if [[ ${1:-} == "Release" ]]; then
     get_latest_release_branch "target_branch";
   fi
 
@@ -376,7 +378,7 @@ gitsync() {
   local switch_cmd="$git_switch_c $sync_branch origin/$target_branch";
   local main_branch=$(get_main_branch);
   
-  if [[ $2 == "cherry-pick" ]]; then
+  if [[ ${2:-} == "cherry-pick" ]]; then
     local base_branch="main";
     local cherrypicked_branch="${current_branch}-cherrypicked";
     run_cmd "$git_switch_c $cherrypicked_branch origin/main";
@@ -403,7 +405,7 @@ gitsync() {
 }
 
 gitsyncchp() {
-  gitsync $1 "cherry-pick";
+  gitsync "${1:-}" "cherry-pick";
 }
 
 # Checks if the current directory or a specific one is inside a Git repostory.

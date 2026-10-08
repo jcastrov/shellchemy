@@ -3,7 +3,7 @@
 img_fill() {
   cmd_exists magick || return 1;
 
-  if [ -z "$1" ]; then
+  if [ -z "${1:-}" ]; then
     echo "Usage: img_fill <image> [color]"
     return 1
   fi
@@ -27,10 +27,10 @@ img_square() {
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --size)
-        validate_flag "$1" "$2" || return 1
+        validate_flag "$1" "${2:-}" || return 1
         size="$2"; shift 2 ;;
       --bg)
-        validate_flag "$1" "$2" || return 1
+        validate_flag "$1" "${2:-}" || return 1
         manual_bg="$2"; shift 2 ;;
       *)
         input="$1"; shift ;;

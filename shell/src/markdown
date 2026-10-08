@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 mdlink() {
-  if [ -z "$1" ]; then
+  if [ -z "${1:-}" ]; then
     print_error "Usage: mdlink <URL>"
     return 1
   fi

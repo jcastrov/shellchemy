@@ -2,9 +2,9 @@
 
 __prepate_branches() {
   local action=$1;
-  local head=$2;
-  local base=$3;
-  local base_original_name=$3;
+  local head=${2:-};
+  local base=${3:-};
+  local base_original_name=${3:-};
 
   if [[ $action == "pr" ]]; then
     enable_brew;
@@ -41,7 +41,7 @@ __prepate_branches() {
   # fi
 
   item() { echo "\n   `color_cyan $1:` ${!1}"; }
-  [ ${ZSH_VERSION} ] && item() { echo "\n   `color_cyan $1:` ${(P)1}"; }
+  [ -n "${ZSH_VERSION:-}" ] && item() { echo "\n   `color_cyan $1:` ${(P)1}"; }
   print_info "Pull Request details: `item base``item head``item title`";
   question "Do you want to continue?";
   if [[ $? == 0 ]]; then
@@ -69,9 +69,9 @@ ghcomparelatestrelease() {
 ghopen() {
   is_git_directory || return 1;
   local repo_url=$(get_repo_url);
-  local current_branch=$1;
+  local current_branch=${1:-};
   [[ $# -ge 1 ]] && {
-    [[ $1 == "." ]] && current_branch=$(echo_current_branch);
+    [[ ${1:-} == "." ]] && current_branch=$(echo_current_branch);
     repo_url="$(get_repo_url)/tree/$current_branch";
   }
   [[ $# -ge 2 ]] && {
@@ -103,8 +103,8 @@ ghprc() {
 #     $1 (Optional): Search text
 ghprf() {
   is_git_directory || return 1;
-  local search_text=$1;
-  [ -z "$1" ] && { 
+  local search_text=${1:-};
+  [ -z "${1:-}" ] && { 
     get_current_branch current_branch;
     search_text="head:$current_branch";
   }

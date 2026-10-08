@@ -48,7 +48,7 @@ print_cmd() {
   printf "\033[1;30m▒ $ %s\n" "`echo "$@" | awk '$1=$1'`$(tput sgr0)"; 
 }
 
-[ ${ZSH_VERSION} ] && {
+[ -n "${ZSH_VERSION:-}" ] && {
   color_black() { echo "%F{black}${1}%f"; }
   color_red() { echo "%F{red}${1}%f"; }
   color_green() { echo "%F{green}${1}%f"; }

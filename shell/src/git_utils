@@ -102,7 +102,7 @@ get_api_repo_url() {
 # Prints normalized HTTPS URL without trailing .git.
 # Returns 0 on success, 1 on failure.
 get_repo_url() {
-  local repo_path="$1";
+  local repo_path="${1:-.}";
   [ -z "$repo_path" ] && repo_path=".";
 
   # Validate path exists
