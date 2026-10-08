@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+SHELLCHEMY_VERSION="1.9.4";
 
 # Scripts path depends on the current shell.
 if [[ -n ${ZSH_VERSION:-} ]]; then
