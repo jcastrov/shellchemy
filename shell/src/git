@@ -47,7 +47,7 @@ gitc() {
   has_parameters $@ || return 1;
   local current_branch=$(echo_current_branch);
   print_info "Committing your changes.";
-  run_cmd "git commit -m \"$current_branch: $1\" $2";
+  run_cmd "git commit -m \"$current_branch: $1\" ${2:-}";
 }
 gitca() { gitc "$1" "--amend"; }
 
@@ -284,7 +284,7 @@ gitsuburr() { run_cmd "git submodule update --remote --rebase $@"; }
 gitsw() {
   has_parameters $@ || return 1;
   local branch_to_switch=$1;
-  local start_point=$2;
+  local start_point="${2:-}";
   local current_branch=$(echo_current_branch);
 
   if [[ "$branch_to_switch" == "-" ]]; then
@@ -299,7 +299,7 @@ gitsw() {
     branch_to_switch="$current_branch-$suffix";
   fi
 
-  if [ -z "$2" ]; then
+  if [ -z "${2:-}" ]; then
     start_point=$(echo_current_branch);
     branch_locally_exists $branch_to_switch && { run_cmd "$git_switch $branch_to_switch"; return 0; }
   fi

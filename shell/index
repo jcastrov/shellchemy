@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
 # Scripts path depends on the current shell.
-SHELLCHEMY_PATH=$(dirname "${BASH_SOURCE[0]}")
-if [[ -n $ZSH_VERSION ]]; then SHELLCHEMY_PATH=${0:A:h}; fi
+if [[ -n ${ZSH_VERSION:-} ]]; then
+  SHELLCHEMY_PATH=${0:A:h}
+else
+  SHELLCHEMY_PATH=$(dirname "${BASH_SOURCE[0]}")
+fi
 SHELLCHEMY_PATH="${SHELLCHEMY_PATH%/shell}"
 
 echo_regex_substring() {
