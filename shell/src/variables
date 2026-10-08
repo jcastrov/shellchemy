@@ -1,9 +1,4 @@
 #!/usr/bin/env bash
-
-<<<<<<< HEAD
-SHELLCHEMY_VERSION="1.10.0";
-=======
->>>>>>> 9b34ed4 (main: Move SHELLCHEMY_VERSION variable)
 SHELLCHEMY_REPO="jcastrov/shellchemy";
 SHELLCHEMY_RELEASES_URL="https://api.github.com/repos/$SHELLCHEMY_REPO/releases";
 SHELLCHEMY_LATEST_RELEASE_URL="$SHELLCHEMY_RELEASES_URL/latest";
